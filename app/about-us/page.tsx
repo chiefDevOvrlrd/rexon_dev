@@ -107,7 +107,7 @@ const AboutUs = () => {
                         profileImage: "/profiles/michealPP.jpg",
                         name: "Micheal Emmanuel",
                         role: "Front-end Engineer, Chief Technical Officer",
-                        bio: "Micheal, our CTO, specializes in frontend development with a focus on sleek, responsive design and intuitive user interfaces. Skilled in React, Next.js, and modern CSS frameworks, he drives the agency’s frontend vision, ensuring every product feels as good as it looks, cause what's a product without good ui."
+                        bio: "Micheal, our CTO, specializes in frontend and Web3 development with a focus on sleek and intuitive user interfaces and most-valued experience in web3 infastructure. Skilled in Javascript, React, Next.js, and modern CSS frameworks, he drives the agency’s frontend and web3 vision, ensuring every product feels as good as it looks, cause what's a product without good ui."
                     },{
                         profileImage: "/profiles/umorenPP.jpg",
                         name: "Emmanuel Umoren",
