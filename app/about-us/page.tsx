@@ -101,8 +101,8 @@ const AboutUs = () => {
                     },{
                         profileImage: "/profiles/divinePP.jpg",
                         name: "Divine Nwachukwu",
-                        role: "Mobile Engineer, Co-founder",
-                        bio: "Divine, co-founder and mobile software engineer, is passionate about crafting seamless mobile experiences. Skilled in Flutter, he focuses on performance optimization and intuitive design, ensuring our apps are not only functional but also delightful to use on any device."
+                        role: "Mobile Engineer, Chief Operations Officer",
+                        bio: "Divine, COO and mobile software engineer, is passionate about crafting seamless mobile experiences. Skilled in Flutter, he focuses on performance optimization and intuitive design, ensuring our apps are not only functional but also delightful to use on any device."
                     },{
                         profileImage: "/profiles/michealPP.jpg",
                         name: "Micheal Emmanuel",
@@ -111,7 +111,7 @@ const AboutUs = () => {
                     },{
                         profileImage: "/profiles/umorenPP.jpg",
                         name: "Emmanuel Umoren",
-                        role: "UI/UX Engineer, Chief Product Officer",
+                        role: "UI/UX Designer, Chief Product Officer",
                         bio: "Emmanuel, CPO and lead UI/UX engineer, combines a keen eye for design with a user-centric approach. Proficient in Figma, and user research methodologies, he ensures every project not only meets business goals but also delivers an exceptional user experience and best believe he's always ging to deliver."
                     },{
                         profileImage: "/profiles/ebubePP.jpg",
@@ -121,12 +121,12 @@ const AboutUs = () => {
                     },{
                         profileImage: "/profiles/ifeanyiPP.jpg",
                         name: "Ifeanyi Ojukwu",
-                        role: "UI/UX Engineer",
+                        role: "UI/UX Designer",
                         bio: "Ifeanyi, a talented UI/UX engineer, is dedicated to creating intuitive and engaging user experiences. With expertise in design tools like Figma and a strong understanding of user behavior, he crafts interfaces that are both visually appealing and easy to navigate, he has a real knack for knowing designs that just fit."
                     },{
                         profileImage: "/profiles/zionPP.jpg",
                         name: "Zion Ubesie",
-                        role: "Full-Stack Engineer",
+                        role: "Frontend Engineer, Mobile Engineer",
                         bio: "Zion navigates both frontend and backend with ease, weaving together code that is efficient, scalable, and purposeful. His work bridges design and functionality, ensuring projects feel seamless end to end. With a knack for fresh perspectives, he injects energy and inventive thinking into every build he touches."
                     },{
                         profileImage: "/profiles/sammyPP.jpg",
