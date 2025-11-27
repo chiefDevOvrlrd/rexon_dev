@@ -127,7 +127,7 @@ const AboutUs = () => {
                         profileImage: "/profiles/zionPP.jpg",
                         name: "Zion Ubesie",
                         role: "Frontend Engineer, Mobile Engineer",
-                        bio: "Zion navigates both frontend and backend with ease, weaving together code that is efficient, scalable, and purposeful. His work bridges design and functionality, ensuring projects feel seamless end to end. With a knack for fresh perspectives, he injects energy and inventive thinking into every build he touches."
+                        bio: "Zion navigates both frontend and mobile development with ease, weaving together code that is efficient, scalable, and purposeful. His work bridges design and functionality, ensuring projects feel seamless end to end. With a knack for fresh perspectives, he injects energy and inventive thinking into every build he touches."
                     },{
                         profileImage: "/profiles/sammyPP.jpg",
                         name: "Samuel Kalu-Ichie",
