@@ -375,14 +375,6 @@ export default function Home() {
           {/*Use short and concise descriptions...*/}
           {[ 
             {
-              thumbnail: "/projects/attend.svg",
-              title: "Attend",
-              tag: "Web Development",
-              description: "A go-to platform for creating, discovering, and joining events. Whether academic, social, or professional, Attends makes hosting seamless and participation effortless.",
-              embed: "",
-              teaser: "/videos/attend.mp4",
-            },
-            {
               thumbnail: "/projects/mzacc.svg",
               title: "Mzacc Global",
               tag: "Web Development",
@@ -390,13 +382,20 @@ export default function Home() {
               embed: "",
               teaser: "/videos/mzacc.mp4",
             },{
-              thumbnail: "/projects/gmcoffee.svg",
-              title: "GM Coffee",
-              tag: "Web3, Design",
-              description: "Web3-powered UI for a ‘Buy Me a Coffee’ app, enabling simple crypto donations with a smooth, creator-focused experience.",
-              embed: "https://embed.figma.com/design/xIbUBunXa3SOsbcwIrzMRs/GM-Coffee?node-id=0-1&embed-host=share",
-              teaser: "",
-            },
+                thumbnail: "/projects/legal-crusaders.svg",
+                title: "Legal Crusaders",
+                tag: "Web Development",
+                description: "A sleek, high-performance immigration law landing page built with Next.js 14 and Tailwind CSS — featuring scroll-triggered animations, a fully responsive layout, and a clean separation of concerns across data, logic, and UI layers.",
+                embed: "",
+                teaser: "/videos/legal-crusaders.mp4"
+            },{
+              thumbnail: "/projects/attend.svg",
+              title: "Attend",
+              tag: "Web Development",
+              description: "A go-to platform for creating, discovering, and joining events. Whether academic, social, or professional, Attends makes hosting seamless and participation effortless.",
+              embed: "",
+              teaser: "/videos/attend.mp4",
+            }
           ].map((showcase, idx) => {
             return (
               <DesignShowcase

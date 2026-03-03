@@ -266,6 +266,13 @@ const Projects = () => {
                             description: "A Rexon Special: Scribl – the smarter way for students to capture, organize, and share knowledge. From personal notes to course-linked highlights, Scribl turns study into a collaborative, engaging experience.",
                             embed: "",
                             teaser: ""
+                        },{
+                           thumbnail: "/projects/legal-crusaders.svg",
+                           title: "Legal Crusaders",
+                           tag: "Web Development",
+                           description: "A sleek, high-performance immigration law landing page built with Next.js 14 and Tailwind CSS — featuring scroll-triggered animations, a fully responsive layout, and a clean separation of concerns across data, logic, and UI layers.",
+                           embed: "",
+                           teaser: "/videos/legal-crusaders.mp4"
                         }
                     ].map((project, index) => (
                         <DesignShowcase 
