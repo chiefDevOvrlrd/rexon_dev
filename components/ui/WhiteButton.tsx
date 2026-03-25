@@ -4,29 +4,38 @@ import styled from 'styled-components';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &{
     text?: React.ReactNode,
+    size?: 'small' | 'medium' | 'large',
 }
-const BlackButton = ({text, ...props}: ButtonProps) => {
+const WhiteButton = ({text, size = 'medium', ...props}: ButtonProps) => {
     return (
-        <StyledWrapper>
+        <StyledWrapper $size={size}>
             <button {...props}>{text}</button>
         </StyledWrapper>
     );
 }
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.div<{ $size?: 'small' | 'medium' | 'large' }>`
     button {
         font-family: inherit;
-        width: 11.5em;
+        width: ${props => 
+            props.$size === 'small' ? '10em' : 
+            props.$size === 'large' ? '13em' : '11.5em'};
         background: transparent;
-        height: 2.7em;
-        line-height: 2.5em;
+        height: ${props => 
+            props.$size === 'small' ? '2.3em' : 
+            props.$size === 'large' ? '3.1em' : '2.7em'};
+        line-height: ${props => 
+            props.$size === 'small' ? '2.1em' : 
+            props.$size === 'large' ? '2.9em' : '2.5em'};
         position: relative;
         cursor: pointer;
         overflow: hidden;
         border: solid 1px #000000ff;
         transition: color 0.5s;
         z-index: 1;
-        font-size: 17px;
+        font-size: ${props => 
+            props.$size === 'small' ? '14px' : 
+            props.$size === 'large' ? '19px' : '17px'};
         border-radius: 30px;
         font-weight: 500;
         color: var(--background);
@@ -65,4 +74,4 @@ const StyledWrapper = styled.div`
 
 
 
-export default BlackButton;
+export default WhiteButton;

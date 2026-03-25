@@ -7,7 +7,7 @@ import BlackButton from "@/components/ui/BlackButton";
 import WhiteButton from "@/components/ui/WhiteButton";
 import LoaderButton from "@/components/ui/LoaderButton";
 import { motion, useInView } from "motion/react";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useQuoteDialog } from "../components/context/QuoteDialogContext";
 
@@ -115,6 +115,7 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
     const [hovered, setHovered] = useState(false);
     const [showEmbed, setShowEmbed] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isMobileSmall, setIsMobileSmall] = useState(false);
 
     const handleMouseEnter = useCallback(() => {
         setHovered(true);
@@ -141,6 +142,19 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
     const handleIframeLoad = useCallback(() => {
         setLoading(false);
     }, []);
+
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobileSmall(window.innerWidth <= 450);
+      }
+
+      handleResize();
+
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      }
+    }, []);
     return (
         <motion.div className={styles.card__container}
             variants={textVariant} custom={custom}
@@ -151,13 +165,13 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
             onMouseLeave={handleMouseLeave}
         >
             <div className={styles.card}>
-                <Image src={thumbnail} alt={title} width={400} height={200} className={styles.card__image} />
+                <Image src={thumbnail} alt={title} fill className={styles.card__image} />
             </div>
             <div className={styles.card__overlay}>
                 <div className={styles.card__media}>
                     {teaser ? (
                         !hovered ? (
-                            thumbnail && <Image src={thumbnail} alt={title} width={400} height={200} />
+                            thumbnail && <Image src={thumbnail} alt={title} fill />
                         ) : (
                             <video
                                 autoPlay
@@ -196,15 +210,16 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
                             loading ? (
                             <LoaderButton disabled />
                             ) : showEmbed ? (
-                            <WhiteButton
-                                text="Close"
-                                onClick={handleCloseEmbed}
+                            <WhiteButton 
+                              text="Close" 
+                              onClick={handleCloseEmbed} 
+                              size={isMobileSmall ? 'small' : 'medium'} 
                             />
                             )  : (
                             <WhiteButton
-                                text="Show Figma"
-                                
-                                onClick={handleShowEmbed}
+                              text="Show Figma"
+                              size={isMobileSmall ? 'small' : 'medium'}
+                              onClick={handleShowEmbed}
                             />
                             )
                         )}
@@ -227,7 +242,22 @@ export default function Home() {
   const ctaIsInView = useInView(ctaRef, {amount: 0.2, once: true });
 
   const serviceHeader = "How we help you?";
-  const ctaHeader = `You can dream but don\'t\nneglect the execution!`;
+  const ctaHeader = `You can dream but don\'t\n neglect the execution!`;
+
+  const [isMobileSmall, setIsMobileSmall] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileSmall(window.innerWidth <= 450);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div className={styles.home__page}>
@@ -251,6 +281,7 @@ export default function Home() {
           <div className={styles.hero__button}>
             <BlackButton 
               text="Start your dream" 
+              size={isMobileSmall ? 'small' : 'medium'}
               onClick={toggleDialog}
             />
           </div>
@@ -259,8 +290,7 @@ export default function Home() {
           <Image src="/hero.svg"
             alt="hero image"
             className={styles.hero__img}
-            width={700}
-            height={500}
+            fill
             priority
             unoptimized
           />
@@ -276,8 +306,7 @@ export default function Home() {
               <Image
                 src="/setup-analytics-animate.svg"
                 alt="Service SVG"
-                width={700}
-                height={500}
+                fill
                 priority
               />
             )}
@@ -347,11 +376,7 @@ export default function Home() {
         <div className={styles.showcase__header}>
           <div className={styles.showcase__header__text}>
             <SplitText 
-              text="Don&apos;t just take our word" 
-              isVisible={showCaseSvgIsInView} 
-            />
-            <SplitText 
-              text="for it."
+              text="Don&apos;t just take our word for it" 
               isVisible={showCaseSvgIsInView} 
             />
             <motion.h3
@@ -362,7 +387,7 @@ export default function Home() {
           </div>
           <div className={styles.showcase__header__image}>
             {showCaseSvgIsInView&&(
-              <Image src="/online-gallery-animate.svg" alt="gallery" width={700} height={500}/>
+              <Image src="/online-gallery-animate.svg" alt="gallery" fill/>
             )}
           </div>
         </div>
@@ -417,6 +442,7 @@ export default function Home() {
         >
           <BlackButton
             text="See More?"
+            size={isMobileSmall ? 'small' : 'medium'}
           />
         </Link>
         
@@ -441,13 +467,14 @@ export default function Home() {
             >Whether you&apos;re a startup looking to make your mark, or an established business aiming to innovate, we&apos;re here to turn your <span>Dream</span> into reality. Let&apos;s build something extraordinary together.</motion.p>
             <div className={styles.cta__container__button}>
               <WhiteButton 
-              text="Start your dream"
-              onClick={toggleDialog}
+                text="Start your dream"
+                onClick={toggleDialog}
+                size={isMobileSmall ? 'small' : 'medium'}
               />
             </div>
           </div>
-          <div className={styles.cta__image}>
-            <Image src="/dreamer-animate.svg"alt="cta image" width={500} height={500}/>
+          <div className={styles.cta__container__image}>
+            <Image src="/dreamer-animate.svg"alt="cta image" fill/>
           </div>
         </motion.div>
       </div>

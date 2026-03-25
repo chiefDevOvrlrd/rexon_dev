@@ -201,8 +201,7 @@ const Projects = () => {
                 <div className={styles.projects__header__image}>
                     {headerIsInView && (
                         <Image src="/innovation-animate.svg" alt="rexon showcase"
-                            width={600}
-                            height={600}
+                            fill
                             priority 
                         />
                     )}                

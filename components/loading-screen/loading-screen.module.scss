@@ -70,3 +70,99 @@
         transform: translateY(-100%);
     }
 }
+
+// Tablet responsiveness (768px and below)
+@media (max-width: 768px) {
+    .splash {
+        gap: 2rem;
+        
+        .logo__section {
+            padding-left: 40px;
+            
+            .logo {
+                height: 200px;
+                width: 300px;
+            }
+            
+            span.logo__category {
+                font-size: 2rem;
+            }
+        }
+        
+        .logo__name h1 {
+            font-size: 3rem;
+        }
+        
+        .loading__text h2 {
+            font-size: 1.5rem;
+            
+            ol {
+                height: 2rem;
+            }
+        }
+    }
+}
+
+// Mobile responsiveness (480px and below)
+@media (max-width: 480px) {
+    .splash {
+        gap: 1.5rem;
+        padding: 20px;
+        
+        .logo__section {
+            text-align: center;
+            
+            .logo {
+                height: 120px;
+                width: 180px;
+            }
+            
+            span.logo__category {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .logo__name h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+        
+        .loading__text h2 {
+            font-size: 1.2rem;
+            
+            ol {
+                height: 1.5rem;
+            }
+        }
+    }
+}
+
+// Small mobile responsiveness (360px and below)
+@media (max-width: 360px) {
+    .splash {
+        gap: 1rem;
+        
+        .logo__section {
+            .logo {
+                height: 100px;
+                width: 150px;
+            }
+            
+            span.logo__category {
+                font-size: 1.2rem;
+            }
+        }
+        
+        .logo__name h1 {
+            font-size: 1.5rem;
+        }
+        
+        .loading__text h2 {
+            font-size: 1rem;
+            
+            ol {
+                height: 1.2rem;
+            }
+        }
+    }
+}

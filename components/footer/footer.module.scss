@@ -25,3 +25,10 @@
         }
     }
 }
+
+@media(max-width: 480px){
+    .footer{
+        flex-direction: column;
+        gap: 1.3rem;
+    }
+}
