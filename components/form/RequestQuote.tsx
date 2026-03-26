@@ -46,9 +46,7 @@ export default function QuoteForm() {
   return (
     <div className={styles.requestForm}>
         <div className={styles.getStarted}>
-            <a href="https://storyset.com/internet">
-                <Image src={"/example-animate.svg"} alt="" width={350} height={450}/>
-            </a>
+          <Image src={"/example-animate.svg"} alt="" fill/>
         </div>
         <div className={styles.formContainer}>
           <h2>Ready to start your dream?</h2>
