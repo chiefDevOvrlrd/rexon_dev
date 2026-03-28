@@ -23,7 +23,7 @@ export default function Footer() {
                 <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" aria-label="Follow us on X (Twitter)">
                     <IconBrandX stroke={2}/>
                 </a>
-                <a href="https://linkedin.com/company/yourcompany" target="_blank" rel="noopener noreferrer" aria-label="Connect with us on LinkedIn">
+                <a href="https://www.linkedin.com/company/rexon-dev/" target="_blank" rel="noopener noreferrer" aria-label="Connect with us on LinkedIn">
                     <IconBrandLinkedin stroke={2}/>
                 </a>
             </div>

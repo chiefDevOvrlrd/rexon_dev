@@ -349,9 +349,9 @@ export default function Home() {
                 description: "When off-the-shelf solutions don't fit, we build tailored software to solve your unique challenges. We design bespoke applications that automate processes and give your business a competitive edge.",
               },
               {
-                title: "Web3 Development",
-                image: "/bitcoin-animate.svg",
-                description: "Ready to build on the blockchain? We'll help you get started. We design and develop secure DApps, custom smart contracts, and even NFT marketplaces to bring your Web3 dream to life."
+                title: "AI Automation",
+                image: "/ai-automation.svg",
+                description: "Looking to streamline your business operations? We design and implement AI-powered systems that handle customer inquiries, qualify leads, and automate follow-ups, helping you respond faster, reduce manual work, and convert more customers."
               },
               {
                 title: "Api Integration",
