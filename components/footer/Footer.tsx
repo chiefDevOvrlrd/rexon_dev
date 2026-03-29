@@ -20,7 +20,7 @@ export default function Footer() {
 
             {/* Social Links */}
             <div className={styles.socials}>
-                <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" aria-label="Follow us on X (Twitter)">
+                <a href="https://x.com/rexon_dev" target="_blank" rel="noopener noreferrer" aria-label="Follow us on X (Twitter)">
                     <IconBrandX stroke={2}/>
                 </a>
                 <a href="https://www.linkedin.com/company/rexon-dev/" target="_blank" rel="noopener noreferrer" aria-label="Connect with us on LinkedIn">
