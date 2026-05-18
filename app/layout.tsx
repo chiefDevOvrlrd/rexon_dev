@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientWrapper from "./ClientWrapper";
-import { QuoteDialogProvider } from "../components/context/QuoteDialogContext";
 
 export const metadata: Metadata = {
   title: "Rexon Dev | AI Agent Automation & Software Development",
@@ -69,11 +68,9 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.ico"/>
       </head>
       <body>
-        <QuoteDialogProvider>
-          <ClientWrapper>
-            {children}
-          </ClientWrapper>
-        </QuoteDialogProvider>
+        <ClientWrapper>
+          {children}
+        </ClientWrapper>
       </body>
     </html>
   );

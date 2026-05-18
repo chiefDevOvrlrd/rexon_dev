@@ -8,8 +8,8 @@ import WhiteButton from "@/components/ui/WhiteButton";
 import LoaderButton from "@/components/ui/LoaderButton";
 import { motion, useInView } from "motion/react";
 import { useRef, useState, useCallback, useEffect } from "react";
+import { useChat } from "@/components/context/ChatContext";
 import Link from "next/link";
-import { useQuoteDialog } from "../components/context/QuoteDialogContext";
 
 // types
 type ServiceCardProps = {
@@ -232,7 +232,7 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
 
 //main component
 export default function Home() {
-  const { toggleDialog } = useQuoteDialog();
+  const { toggleChat } = useChat();
   const serviceSvg = useRef<HTMLDivElement | null>(null);
   const showCaseSvg = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
@@ -279,10 +279,10 @@ export default function Home() {
           <h3>We believe your ambition should know no limits. At Rexon Dev, <span>dream is free</span>, and we&apos;re here to build it.</h3>
           <p>Your dedicated team for exceptional web, mobile, and custom software solutions. Let&apos;s create something extraordinary.</p>
           <div className={styles.hero__button}>
-            <BlackButton 
-              text="Start your dream" 
-              size={isMobileSmall ? 'small' : 'medium'}
-              onClick={toggleDialog}
+            <BlackButton
+              text="Start your dream"
+              size={isMobileSmall ? "small" : "medium"}
+              onClick={toggleChat}
             />
           </div>
         </motion.div>
@@ -466,10 +466,10 @@ export default function Home() {
               animate={ctaIsInView ? "visible" : "hidden"}
             >Whether you&apos;re a startup looking to make your mark, or an established business aiming to innovate, we&apos;re here to turn your <span>Dream</span> into reality. Let&apos;s build something extraordinary together.</motion.p>
             <div className={styles.cta__container__button}>
-              <WhiteButton 
+              <WhiteButton
                 text="Start your dream"
-                onClick={toggleDialog}
-                size={isMobileSmall ? 'small' : 'medium'}
+                onClick={toggleChat}
+                size={isMobileSmall ? "small" : "medium"}
               />
             </div>
           </div>

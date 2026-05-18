@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Footer from '@/components/footer/Footer';
 import BlackButton from '@/components/ui/BlackButton';
 import { useRef } from 'react';
-import { useQuoteDialog } from '@/components/context/QuoteDialogContext';
+import { useChat } from '@/components/context/ChatContext';
 
 //types
 type SplitTextProps = {
@@ -78,7 +78,7 @@ function SplitText({ text, isVisible, className }: SplitTextProps) {
 
 //main component
 const Pricing = () => {
-    const { toggleDialog } = useQuoteDialog();
+    const { toggleChat } = useChat();
     const headerRef = useRef<HTMLDivElement|null>(null);
     const factorsRef = useRef<HTMLDivElement|null>(null);
     const engagementRef = useRef<HTMLDivElement|null>(null);
@@ -210,9 +210,12 @@ const Pricing = () => {
             <div className={styles.pricing__getStarted}>
                 <h2>Let&apos;s get rolling!!!</h2>
                 <p>The best way to get an accurate quote is to discuss your project with us. Let&apos;s schedule a free consultation to talk about your vision and provide a personalized investment estimate.</p>
-                <div className={styles.pricing__getStarted__button}>
-                    <BlackButton text="Start your Dream" onClick={toggleDialog}/>
-                </div>
+            <div className={styles.pricing__getStarted__button}>
+                <BlackButton
+                    text="Start your Dream"
+                    onClick={toggleChat}
+                />
+            </div>
             </div>
             <Footer />
         </div>

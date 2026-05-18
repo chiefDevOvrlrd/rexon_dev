@@ -8,7 +8,7 @@ import WhiteButton from "@/components/ui/WhiteButton";
 import LoaderButton from "@/components/ui/LoaderButton";
 import BlackButton from "@/components/ui/BlackButton";
 import Footer from "@/components/footer/Footer";
-import { useQuoteDialog } from "@/components/context/QuoteDialogContext";
+import { useChat } from "@/components/context/ChatContext";
 
 //types
 type DesignShowcaseProps = {
@@ -152,7 +152,7 @@ const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, cust
 
 //main component
 const Projects = () => {
-    const {toggleDialog} = useQuoteDialog()
+    const { toggleChat } = useChat();
     const headerRef = useRef<HTMLDivElement | null>(null)
     const contentRef = useRef<HTMLDivElement | null>(null)
 
@@ -288,7 +288,10 @@ const Projects = () => {
                 </div>
             </div>
             <div className={styles.projects__cta}>
-                <BlackButton text="Start your dream" onClick={toggleDialog} />
+                <BlackButton
+                  text="Start your dream"
+                  onClick={toggleChat}
+                />
             </div>
             <Footer />
         </div>

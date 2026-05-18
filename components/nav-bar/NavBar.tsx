@@ -7,6 +7,7 @@ import { motion } from "motion/react"
 import Link from "next/link";
 import BlackButton from "../ui/BlackButton";
 import { useState, useEffect } from 'react';
+import { useChat } from "@/components/context/ChatContext";
 
 const barVariant = {
     visible: { opacity: 1, y:0 },
@@ -21,7 +22,8 @@ const linkVariants = {
 }
 
 
-export default function NavBar ({ toggleDialog }: { toggleDialog: () => void }) {
+export default function NavBar() {
+    const { toggleChat } = useChat();
     const [isVisible, setIsVisible] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false); // New state for menu
     const [isMobileSmall, setIsMobileSmall] = useState(false);
@@ -125,7 +127,11 @@ export default function NavBar ({ toggleDialog }: { toggleDialog: () => void }) 
                 </div>
 
                 <div className={styles.nav__button}>
-                    <BlackButton text="Start your dream" onClick={toggleDialog} size={isMobileSmall ? 'small' : 'medium'} />
+                    <BlackButton
+                      text="Ask Alfred"
+                      onClick={toggleChat}
+                      size={isMobileSmall ? "small" : "medium"}
+                    />
                 </div>
             </div>
             
