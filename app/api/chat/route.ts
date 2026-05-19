@@ -1,16 +1,22 @@
 import { NextResponse } from "next/server";
-import { runAlfredAgent, type AlfredAgentContext } from "@/lib/alfred/agent";
-import { appendSessionHistory, getSessionHistory } from "@/lib/alfred/redis";
+import { runAlfredAgent } from "@/lib/alfred/agent";
+import type { AlfredMessage, LeadData } from "@/lib/alfred/agent";
+import { Redis } from "@upstash/redis";
 
-type AlfredChatMessage = {
-  role: "user" | "assistant";
-  content: string;
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+type SessionData = {
+  history: AlfredMessage[];
+  turnCount: number;
+  collectedData: LeadData;
 };
 
 type ChatRequestBody = {
   message: string;
   sessionId: string;
-  history?: AlfredChatMessage[];
 };
 
 type ChatResponseBody = {
@@ -18,22 +24,10 @@ type ChatResponseBody = {
   status: "ongoing" | "qualified" | "borderline" | "declined";
 };
 
-// Map agent qualification to widget status
-function toStatus(
-  qualification: AlfredAgentContext extends any ? any : any
-): ChatResponseBody["status"] {
-  const q = qualification as "qualified" | "borderline" | "decline";
-  if (q === "qualified") return "qualified";
-  if (q === "borderline") return "borderline";
-  return "declined";
-}
-
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as ChatRequestBody;
-
     const { message, sessionId } = body;
-    const incomingHistory = Array.isArray(body.history) ? body.history : [];
 
     if (!message || typeof message !== "string") {
       return NextResponse.json(
@@ -48,51 +42,66 @@ export async function POST(req: Request) {
       );
     }
 
-    // Load persisted server-side history
-    const persistedHistory =
-      await getSessionHistory<AlfredChatMessage>(sessionId);
+    // 1. Load full session from Redis
+    const existing = await redis.get<SessionData>(`session:${sessionId}`);
+    const session: SessionData = existing ?? {
+      history: [],
+      turnCount: 0,
+      collectedData: {},
+    };
 
-    // Merge (incoming history wins if provided; otherwise use persisted)
-    const history =
-      incomingHistory.length > 0 ? incomingHistory : persistedHistory;
-
-    const context: AlfredAgentContext = {
+    // 2. Run Alfred with full session state
+    const decision = await runAlfredAgent({
       sessionId,
-      history,
       userMessage: message,
+      history: session.history,
+      turnCount: session.turnCount,
+      collectedData: session.collectedData,
+    });
+
+    // 3. Build updated session
+    const updatedSession: SessionData = {
+      history: [
+        ...session.history,
+        { role: "user", content: message },
+        { role: "assistant", content: decision.reply },
+      ],
+      turnCount: session.turnCount + 1,
+      collectedData: decision.leadData ?? session.collectedData,
     };
 
-    const decision = await runAlfredAgent(context);
+    // 4. Save back to Redis — expire after 1 hour
+    await redis.set(`session:${sessionId}`, updatedSession, { ex: 3600 });
 
-    // Persist the new turn (user + assistant). Keep history growing; trim can be handled server-side later.
-    await appendSessionHistory<AlfredChatMessage>(sessionId, {
-      role: "user",
-      content: message,
-    });
+    // 5. If qualified or borderline, log the lead
+    if (
+      (decision.qualification === "qualified" ||
+        decision.qualification === "borderline") &&
+      decision.leadData?.email
+    ) {
+      await redis.set(
+        `lead:${Date.now()}:${decision.leadData.email}`,
+        {
+          ...decision.leadData,
+          timestamp: new Date().toISOString(),
+          status: decision.qualification,
+          turnCount: updatedSession.turnCount,
+        },
+        { ex: 60 * 60 * 24 * 90 } // 90 days
+      );
+    }
 
-    await appendSessionHistory<AlfredChatMessage>(sessionId, {
-      role: "assistant",
-      content: decision.reply,
-    });
-
+    // 6. Map qualification to response status
     const status: ChatResponseBody["status"] =
-      decision.qualification === "qualified"
-        ? "qualified"
-        : decision.qualification === "borderline"
-          ? "borderline"
-          : "declined";
+      decision.qualification === "qualified" ? "qualified"
+      : decision.qualification === "borderline" ? "borderline"
+      : decision.qualification === "declined" ? "declined"
+      : "ongoing";
 
-    const response: ChatResponseBody = {
-      reply: decision.reply,
-      status,
-    };
+    return NextResponse.json({ reply: decision.reply, status });
 
-    return NextResponse.json(response);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json(
-      { error: "Chat failed" },
-      { status: 500 }
-    );
+    console.error("[Alfred] chat route error:", e);
+    return NextResponse.json({ error: "Chat failed" }, { status: 500 });
   }
 }

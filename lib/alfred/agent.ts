@@ -35,30 +35,28 @@ export type AlfredAgentContext = {
   collectedData: LeadData;
 };
 
-// ─── model call helper ────────────────────────────────────────────────────────
-export async function callModel(mdl: any, prompt: any): Promise<string> {
-  const out: any = typeof mdl.invoke === "function"
-    ? await mdl.invoke(prompt)
-    : typeof mdl.call === "function"
-    ? await mdl.call(prompt)
-    : typeof mdl.generate === "function"
-    ? await mdl.generate([prompt])
-    : await mdl;
+// ─── model type ───────────────────────────────────────────────────────────────
+type LangChainModel = {
+  invoke: (input: string | { role: string; content: string }[]) => Promise<{ content: unknown }>;
+};
 
-  return typeof out?.content === "string" ? out.content
-    : typeof out === "string" ? out
-    : typeof out?.text === "string" ? out.text
-    : "";
+// ─── model call helper ────────────────────────────────────────────────────────
+export async function callModel(
+  mdl: LangChainModel,
+  prompt: string | { role: string; content: string }[]
+): Promise<string> {
+  const out = await mdl.invoke(prompt);
+  return typeof out?.content === "string" ? out.content : "";
 }
 
-// ─── extract lead fields from conversation so far ─────────────────────────────
+// ─── extract lead fields from conversation ────────────────────────────────────
 function extractLeadData(history: AlfredMessage[], currentMessage: string): LeadData {
   const allText = [...history.map(m => m.content), currentMessage].join(" ");
 
   const emailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-
-  // name is usually given early — look for "I'm X", "my name is X", or just a standalone name
-  const nameMatch = allText.match(/(?:i'?m|my name is|i am|call me)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i);
+  const nameMatch = allText.match(
+    /(?:i'?m|my name is|i am|call me)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i
+  );
 
   return {
     email: emailMatch?.[0],
@@ -75,7 +73,6 @@ function isQualified(data: LeadData): boolean {
 export async function runAlfredAgent(
   context: AlfredAgentContext
 ): Promise<AlfredAgentDecision> {
-
   const { userMessage, history, turnCount, collectedData } = context;
 
   // 1. Check knowledge base first — no LLM call needed
@@ -90,7 +87,7 @@ export async function runAlfredAgent(
     };
   }
 
-  // 2. Extract any lead data from current message + history
+  // 2. Extract lead data from current message + history
   const extracted = extractLeadData(history, userMessage);
   const updatedData: LeadData = { ...collectedData, ...extracted };
 
@@ -111,7 +108,7 @@ export async function runAlfredAgent(
     };
   }
 
-  // 4. Hard budget — 8 messages and still not qualified
+  // 4. Hard limit — 8 messages and still not qualified
   if (turnCount >= 8) {
     return {
       qualification: "borderline",
@@ -123,22 +120,24 @@ export async function runAlfredAgent(
     };
   }
 
-  // 5. Not enough data yet — call LLM to continue conversation
+  // 5. Not enough data yet — call LLM
   const trimmed = await trimHistoryToLast6(history);
-  const messages = [
+  const messages: { role: string; content: string }[] = [
     { role: "system", content: getSystemPrompt() },
-    ...trimmed.trimmedMessages.map(m => ({ role: (m as any).role ?? "user", content: (m as any).content ?? "" })),
+    ...trimmed.trimmedMessages.map(m => ({ role: m.role, content: m.content })),
     { role: "user", content: userMessage },
   ];
 
   let raw = "";
   try {
-    raw = await callModel(fastModel, messages);
-  } catch (err: any) {
-    console.error("[Alfred] model call failed:", err?.message ?? err);
+    raw = await callModel(fastModel as unknown as LangChainModel, messages);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("[Alfred] model call failed:", message);
   }
 
-  const reply = raw?.trim() ||
+  const reply =
+    raw?.trim() ||
     "Thanks — could you share your name, email, and a quick description of what you'd like to build?";
 
   return {

@@ -152,7 +152,7 @@ export default function AlfredChat() {
         >
           {messages.length === 0 ? (
             <div className={styles.chatWidget__emptyState}>
-              So, what's the dream?
+              So, what&apos;s the dream?
             </div>
           ) : (
             messages.map((m, idx) => (
