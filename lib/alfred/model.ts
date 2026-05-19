@@ -9,12 +9,12 @@ import { ChatGroq } from "@langchain/groq";
  * - SMART_MODEL_ID: gemini-2.5-flash
  */
 
-export const FAST_MODEL_ID = process.env.FAST_MODEL_ID ?? "gemini-3-flash";
+export const FAST_MODEL_ID = process.env.FAST_MODEL_ID ?? "llama-3.3-70b-versatile";
 export const SMART_MODEL_ID = process.env.SMART_MODEL_ID ?? "gemini-2.5-flash";
 
-export const fastModel = new ChatGoogleGenerativeAI({
+export const fastModel = new ChatGroq({
   model: FAST_MODEL_ID,
-  maxOutputTokens: 500,
+  maxTokens: 500,
   temperature: 0.4,
 });
 
