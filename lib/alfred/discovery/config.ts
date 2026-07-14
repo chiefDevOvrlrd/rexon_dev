@@ -1,10 +1,10 @@
 export const DISCOVERY_LIMITS = {
-    maps: 5,
-    instagramSearchResults: 5,
-    googleSearchResults: 5,
-    linkedinProfiles: 5,
-    instagramProfiles: 5,
-    tiktokProfiles: 5,
+    maps: 20,
+    instagramSearchResults: 100, // posts returned
+    instagramSearchLimit: 10,     // search matches examined
+    instagramProfiles: 30,        // profiles to enrich
+
+    googleSearchResults: 20,
 
     cacheTTL: 60 * 60 * 24 * 7, // 7 days
 };

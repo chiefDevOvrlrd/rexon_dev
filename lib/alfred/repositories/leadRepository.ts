@@ -4,7 +4,7 @@ import {
     spreadsheetId,
     sheetName
 } from "../service/sheet";
-import { Research } from "@/types/lead";
+import { Lead } from "@/types/lead";
 
 export type LeadStatus =
     | "NEW"
@@ -31,32 +31,6 @@ export type LeadSource =
     | "Referral"
     | "Manual";
 
-export interface Lead {
-    ID: string;
-
-    business: string;
-    website: string;
-    email: string;
-    phone: string;
-
-    industry: string;
-    category: string;
-
-    source: LeadSource;
-    leadType: LeadType;
-    status: LeadStatus;
-
-    research: Research;
-
-    firstContactedAt?: string;
-    lastContactedAt?: string;
-    nextFollowUp?: string;
-
-    lastInteraction?: string;
-    lastReply?: string;
-
-    outreachMessage?: string;
-}
 
 export async function createLead(lead: Omit<
     Lead, 
@@ -93,18 +67,20 @@ export async function createLead(lead: Omit<
         row.email,
         row.phone,
         row.source,
+        row.leadType,
         row.status,
+        row.leadScore,
     ];
 
     await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: `${sheetName}!A:J`,
-        valueInputOption: "USER_ENTERED",
+        valueInputOption: "RAW",
         requestBody: {
             values: [valuesRow],
         },
     });
-
+    console.log(`[SHEETS] Saved ${lead.business}`);
     return row;
 }
 

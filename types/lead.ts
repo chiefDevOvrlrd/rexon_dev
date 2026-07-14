@@ -44,5 +44,14 @@ export interface Research extends DiscoveredLead {
 }
 export interface Lead extends Research {
   ID: string;
+  leadType: "OUTBOUND" | "INBOUND";
   status: "NEW" | "CONTACTED" | "REPLIED" | "BOOKED";
+  firstContactedAt?: string;
+  lastContactedAt?: string;
+  nextFollowUp?: string;
+
+  lastInteraction?: string;
+  lastReply?: string;
+
+  outreachMessage?: string;
 }

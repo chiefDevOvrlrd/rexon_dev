@@ -1,15 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { searchIg } from "@/lib/alfred/discovery/ig";
+import { searchIgDiscovery } from "@/lib/alfred/discovery/ig";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-    const query = req.nextUrl.searchParams.get("query");
+export async function GET() {
+    const result = await searchIgDiscovery("plumbingtexas");
 
-    if (!query) {
-        return NextResponse.json(
-        { error: "Missing query" },
-        { status: 400 }
-        );
-    }
-
-    return NextResponse.json(await searchIg(query))
+    return NextResponse.json(result)
 }

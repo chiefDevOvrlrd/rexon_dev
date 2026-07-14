@@ -1,11 +1,5 @@
-interface Lead {
-    business: string;
-    website: string;
-    phone: string;
-    email: string;
-}
-
-export function deduplicate(leads: Lead[]) {
+import { DiscoveredLead } from "@/types/lead"; 
+export function deduplicate(leads: DiscoveredLead[]) {
     const seen = new Set<string>();
 
     return leads.filter((lead) => {
@@ -22,3 +16,4 @@ export function deduplicate(leads: Lead[]) {
         return true;
     });
 }
+

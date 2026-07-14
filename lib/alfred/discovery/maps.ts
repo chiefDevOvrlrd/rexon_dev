@@ -1,21 +1,24 @@
-import { ApifyClient } from "apify-client";
+import { apify } from "../service/apify";
 import { DiscoveredLead } from "@/types/lead";
+import { DISCOVERY_LIMITS } from "./config";
 
-const client = new ApifyClient({
-    token: process.env.APIFY_TOKEN!,
-});
+const client = apify
 
-export async function searchGoogleMaps(query: string, limit = 10) : Promise<DiscoveredLead[]> {
+export async function searchGoogleMaps(query: string, limit = DISCOVERY_LIMITS.maps) : Promise<DiscoveredLead[]> {
     const run = await client.actor("compass/crawler-google-places").call({
         searchStringsArray: [query],
         maxCrawledPlacesPerSearch: limit,
     });
+    console.log(`[MAPS] Searching "${query}"`);
 
     const { items } = await client
         .dataset(run.defaultDatasetId)
         .listItems();
+        
+    console.log(`[MAPS] Found ${items.length} businesses`);
 
-    return items.map((item: any) => ({
+
+    const leads = items.map((item: any) => ({
         business: item.title,
         website: item.website ?? "",
         phone: item.phone ?? "",
@@ -24,4 +27,18 @@ export async function searchGoogleMaps(query: string, limit = 10) : Promise<Disc
         industry: query,
         status: "NEW",
     }));
+
+    console.log(`[MAPS] Returning ${leads.length} leads`)
+
+    return leads
+}
+
+export async function searchGoogleMapsBusiness(
+    business: string
+): Promise<DiscoveredLead | null> {
+    const results = await searchGoogleMaps(business);
+
+    if (!results.length) return null;
+
+    return results[0];
 }
