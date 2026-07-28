@@ -1,15 +1,15 @@
 import { DiscoveredLead, Research } from "@/types/lead";
-import { crawlWebsite } from "./website";
 import { fastModel } from "../model";
 import { searchIgEnrichment } from "../discovery/ig";
 import { searchGoogleMapsBusiness } from "../discovery/maps";
-import { enrichContactInfo } from "./contact";
+import { enrichContactInfo } from "../service/contact";
 import { LEAD_RESEARCH_PROMPT } from "../prompts";
 
 
 
 export async function leadResearch(
-    lead: DiscoveredLead
+    lead: DiscoveredLead,
+    crawlText: string
 ): Promise<Research> {
 
     if (!lead.website) {
@@ -53,19 +53,13 @@ export async function leadResearch(
         scoreReason: "",
         qualification: "COLD"
     };
-    await enrichContactInfo(lead);
+    if (lead.website && (!lead.email || !lead.phone)) {
+        await enrichContactInfo(lead);
+    }
     
     console.log(`[CRAWLER] Crawling ${lead.website}`);
 
-    const pages = await crawlWebsite(lead.website);
-
-    console.log(`[CRAWLER] ${pages.length} pages crawled`);
-
-    const text = pages
-        .map((page: any) => page.text)
-        .join("\n\n")
-        .slice(0, 15000); // prevent huge prompts
-
+    const text = crawlText;
 
 
     const prompt = LEAD_RESEARCH_PROMPT
@@ -78,6 +72,7 @@ export async function leadResearch(
     const content = (response.content as string)
         .replace(/```json/g, "")
         .replace(/```/g, "")
+        .replace(/,\s*(?=[}\]])/g, "")
         .trim();
 
     let parsed;
@@ -85,9 +80,8 @@ export async function leadResearch(
     try {
         parsed = JSON.parse(content);
     } catch (err) {
-        console.error("[AI] Invalid JSON");
-        console.error(content);
-
+        console.error("[AI] Invalid JSON for", lead.business );
+        console.log(content);
         throw err;
     }
 

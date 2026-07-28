@@ -1,3 +1,29 @@
+export type LeadStatus =
+    | "NEW"
+    | "CONTACTED_US"
+    | "CONTACTED"
+    | "REPLIED"
+    | "FOLLOW_UP"
+    | "BOOKED"
+    | "NOT_INTERESTED"
+    | "NO_RWSPONSE";
+
+export type LeadType = 
+    | "OUTBOUND"
+    | "INBOUND";
+
+export type LeadSource =
+    | "Google Maps"
+    | "Instagram"
+    | "LinkedIn"
+    | "TikTok"
+    | "Referral"
+    | "Website Chat"
+    | "WhatsApp"
+    | "Email"
+    | "Referral"
+    | "Manual";
+
 export interface DiscoveredLead {
   business: string;
   website: string;
@@ -7,12 +33,11 @@ export interface DiscoveredLead {
   phone: string;
   email: string;
   industry: string;
-  source: string;
+  source: LeadSource;
 }
 
 export interface Research extends DiscoveredLead {
     summary: string;
-    industry: string;      // e.g. "Real Estate Investment Company"
     category:
         | "Real Estate"
         | "Logistics"
@@ -41,17 +66,20 @@ export interface Research extends DiscoveredLead {
     leadScore: number;
     scoreReason: string;
     personalization: string;
+    crawlText?: string;
 }
 export interface Lead extends Research {
   ID: string;
-  leadType: "OUTBOUND" | "INBOUND";
-  status: "NEW" | "CONTACTED" | "REPLIED" | "BOOKED";
-  firstContactedAt?: string;
-  lastContactedAt?: string;
+  leadType: LeadType;
+  status: LeadStatus;
+  firstContacted?: string;
+  lastContacted?: string;
+  followUpCount: number;
   nextFollowUp?: string;
-
+  lastFollowUp: string;
+  
   lastInteraction?: string;
   lastReply?: string;
-
+  subject?: string;
   outreachMessage?: string;
 }

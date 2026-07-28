@@ -1,8 +1,9 @@
 import { searchGoogleMaps } from "../discovery/maps"; 
+import { crawlLead } from "../service/crawl";
 import { searchIgDiscovery } from "../discovery/ig";
 import { deduplicate } from "../discovery/deduplication";
 import { createLead, getLeads } from "../repositories/leadRepository";
-import { leadResearch } from "../service/leadResearch";
+import { leadResearch } from "./leadResearch";
 import { getProgress, saveProgress } from "../discovery/campaign";
 
 
@@ -60,15 +61,34 @@ export async function discoverLeads(
             lead: i,
         });
 
-        try {
-            const researchedLead =
-                await leadResearch(lead);
-            await createLead(researchedLead);
+        const crawlText = await crawlLead(lead.website);
+
+        let researchedLead;
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                researchedLead = await leadResearch(
+                    lead,
+                    crawlText
+                );
+
+                break;
+            } catch (err) {
+                console.log(
+                    `[AI] Retry ${attempt} for ${lead.business}`
+                );
+
+                if (attempt === 3) {
+                    console.error(err);
+                }
+            }
         }
-        catch(err){
-            console.error(err);
+
+        if (!researchedLead) {
             continue;
         }
+
+        await createLead(researchedLead);
 
         // Prevent duplicates within this run
         existingBusinesses.add(business);

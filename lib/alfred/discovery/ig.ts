@@ -1,4 +1,4 @@
-import { apify } from "@/lib/alfred/service/apify";
+import { apifyDiscovery } from "@/lib/alfred/service/apify";
 import { DiscoveredLead } from "@/types/lead";
 import { DISCOVERY_LIMITS } from "./config";
 import { canUse, recordUsage } from "./budget";
@@ -21,7 +21,7 @@ export async function searchIgProfiles(query: string): Promise<string[]> {
         return [];
     }
 
-    const run = await apify.actor("apify/instagram-scraper").call({
+    const run = await apifyDiscovery.actor("apify/instagram-scraper").call({
         search: query,
         searchType: "user",
         resultsLimit: DISCOVERY_LIMITS.instagramSearchResults,
@@ -29,7 +29,7 @@ export async function searchIgProfiles(query: string): Promise<string[]> {
 
     await recordUsage("instagramSearchResults");
 
-    const { items } = await apify
+    const { items } = await apifyDiscovery
         .dataset(run.defaultDatasetId)
         .listItems();
 
@@ -47,14 +47,14 @@ export async function searchIgHashtags(query: string): Promise<string[]> {
         return [];
     }
 
-    const run = await apify.actor("apify/instagram-search-scraper").call({
+    const run = await apifyDiscovery.actor("apify/instagram-search-scraper").call({
         search: query,
         searchType: "hashtag",
         searchLimit: 1,
         liveSearch: true,
     });
 
-    const { items } = await apify
+    const { items } = await apifyDiscovery
         .dataset(run.defaultDatasetId)
         .listItems();
 
@@ -75,14 +75,14 @@ export async function scrapeHashtagPosts(
     hashtagUrl: string
 ): Promise<string[]> {
 
-    const run = await apify.actor("apify/instagram-scraper").call({
+    const run = await apifyDiscovery.actor("apify/instagram-scraper").call({
         directUrls: [hashtagUrl],
         resultsType: "posts",
         resultsLimit: DISCOVERY_LIMITS.instagramSearchResults,
         addParentData: false,
     });
 
-    const { items } = await apify
+    const { items } = await apifyDiscovery
         .dataset(run.defaultDatasetId)
         .listItems();
 
@@ -104,13 +104,13 @@ export async function getIgProfiles(usernames: string[]) {
     return [];
   }
 
-    const run = await apify.actor("apify/instagram-profile-scraper").call({
+    const run = await apifyDiscovery.actor("apify/instagram-profile-scraper").call({
         usernames: usernames.slice(0, DISCOVERY_LIMITS.instagramProfiles),
     });
 
     await recordUsage("instagramProfiles");
 
-    const { items } = await apify
+    const { items } = await apifyDiscovery
         .dataset(run.defaultDatasetId)
         .listItems();
 

@@ -1,8 +1,8 @@
-import { apify } from "../service/apify";
+import { apifyDiscovery } from "../service/apify";
 import { DiscoveredLead } from "@/types/lead";
 import { DISCOVERY_LIMITS } from "./config";
 
-const client = apify
+const client = apifyDiscovery
 
 export async function searchGoogleMaps(query: string, limit = DISCOVERY_LIMITS.maps) : Promise<DiscoveredLead[]> {
     const run = await client.actor("compass/crawler-google-places").call({
@@ -23,7 +23,7 @@ export async function searchGoogleMaps(query: string, limit = DISCOVERY_LIMITS.m
         website: item.website ?? "",
         phone: item.phone ?? "",
         email: "",
-        source: "Google Maps",
+        source: "Google Maps" as const,
         industry: query,
         status: "NEW",
     }));

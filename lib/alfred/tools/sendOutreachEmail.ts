@@ -1,32 +1,30 @@
+import { resend } from "../service/resend";
+
+type SendEmailParams = {
+    to: string;
+    subject: string;
+    html: string;
+    from?: string;
+};
+
 export async function sendEmail({
     to,
     subject,
     html,
-}: {
-    to: string;
-    subject: string;
-    html: string;
-}) {
-    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "api-key": process.env.BREVO_API_KEY!,
-        },
-        body: JSON.stringify({
-            sender: {
-                name: "Joseph Aneto",
-                email: process.env.BREVO_SENDER!,
-            },
-            to: [{ email: to }],
-            subject,
-            htmlContent: html,
-        }),
+    from = "Alfred <alfred@rexon.dev>",
+}: SendEmailParams) {
+    const { data, error } = await resend.emails.send({
+        from,
+        to,
+        subject,
+        html,
     });
 
-    if (!res.ok) {
-        throw new Error(await res.text());
+    if (error) {
+        throw new Error(error.message);
     }
 
-    return res.json();
+    console.log(`[EMAIL] Sent to ${to}. ID: ${data?.id}`)
+
+    return data;
 }

@@ -1,14 +1,14 @@
-import { apify } from "./apify";
+import { apifyResearch } from "./apify";
 
 export async function crawlWebsite(url: string) {
-    const run = await apify.actor(
+    const run = await apifyResearch.actor(
         "apify/website-content-crawler"
     ).call({
         startUrls: [{ url }],
         maxCrawlPages: 3,
     });
 
-    const { items } = await apify
+    const { items } = await apifyResearch
         .dataset(run.defaultDatasetId)
         .listItems();
 

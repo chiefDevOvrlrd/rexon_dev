@@ -1,5 +1,9 @@
 import { ApifyClient } from "apify-client";
 
-export const apify = new ApifyClient({
-    token: process.env.APIFY_TOKEN!,
+export const apifyDiscovery = new ApifyClient({
+    token: process.env.APIFY_DISCOVERY_TOKEN!,
 });
+
+export const apifyResearch = new ApifyClient({
+    token: process.env.APIFY_RESEARCH_TOKEN
+})

@@ -1,6 +1,6 @@
 export const DISCOVERY_LIMITS = {
     maps: 20,
-    instagramSearchResults: 100, // posts returned
+    instagramSearchResults: 75, // posts returned
     instagramSearchLimit: 10,     // search matches examined
     instagramProfiles: 30,        // profiles to enrich
 
