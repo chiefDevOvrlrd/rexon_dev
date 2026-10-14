@@ -6,7 +6,7 @@ export type LeadStatus =
     | "FOLLOW_UP"
     | "BOOKED"
     | "NOT_INTERESTED"
-    | "NO_RWSPONSE";
+    | "NO_RESPONSE";
 
 export type LeadType = 
     | "OUTBOUND"
