@@ -24,7 +24,7 @@ function makeSessionId() {
 }
 
 export default function AlfredChat() {
-  const { isOpen, closeChat } = useChat();
+  const { isOpen, closeChat, pendingMessage, clearPendingMessage } = useChat();
   const [sessionId, setSessionId] = useState<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("ongoing");
@@ -59,15 +59,30 @@ export default function AlfredChat() {
     if (status === "declined") return "Alfred will close this politely ✨";
     return "Hi, I’m Alfred, ask me anything";
   }, [status]);
+  // A project/product card asked Alfred something on the visitor's behalf.
+  const handledPending = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isOpen || !pendingMessage || !sessionId || loading) return;
+    if (handledPending.current === pendingMessage) return;
+    handledPending.current = pendingMessage;
+    clearPendingMessage();
+    void sendMessage(pendingMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, pendingMessage, sessionId, loading]);
+
+  useEffect(() => {
+    if (!pendingMessage) handledPending.current = null;
+  }, [pendingMessage]);
+
   if (!isOpen) {
     return null;
   }
-  async function sendMessage() {
-    const trimmed = input.trim();
+  async function sendMessage(text?: string) {
+    const trimmed = (text ?? input).trim();
     if (!trimmed || loading) return;
 
     setLoading(true);
-    setInput("");
+    if (text === undefined) setInput("");
 
     const userMsg: ChatMessage = { role: "user", content: trimmed };
     setMessages((prev) => [...prev, userMsg]);
@@ -196,7 +211,7 @@ export default function AlfredChat() {
               }}
             />
             <button
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={!input.trim() || loading}
               className={styles.chatWidget__sendButton}
             >

@@ -16,6 +16,9 @@ export default function Footer() {
             {/* copyright text */}
             <div>
                 <p>©{year} Rexon. All rights reserved.</p>
+                <p className={styles.credit}>
+                    Illustrations by <a href="https://storyset.com" target="_blank" rel="noopener noreferrer">Storyset</a>
+                </p>
             </div>
 
             {/* Social Links */}

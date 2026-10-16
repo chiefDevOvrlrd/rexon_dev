@@ -1,0 +1,69 @@
+.ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid rgba(240, 236, 228, 0.35);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+
+  svg {
+    transition: transform 0.25s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    svg {
+      transform: translateX(4px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #f0ece4;
+    outline-offset: 3px;
+  }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  animation: ping 2s infinite;
+}
+
+.ghost {
+  background: transparent;
+  color: #f0ece4;
+
+  &:hover {
+    background: rgba(240, 236, 228, 0.1);
+    border-color: #f0ece4;
+  }
+}
+
+.solid {
+  background: #f0ece4;
+  color: #0a0a0a;
+  border-color: #f0ece4;
+
+  &:hover {
+    background: #fff;
+  }
+}
+
+@keyframes ping {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot { animation: none; }
+  .ask, .ask svg { transition: none; }
+}
