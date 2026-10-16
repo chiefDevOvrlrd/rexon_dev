@@ -2,485 +2,262 @@
 
 import styles from "./page.module.scss";
 import Image from "next/image";
-import Footer from "@/components/footer/Footer" 
-import BlackButton from "@/components/ui/BlackButton";
-import WhiteButton from "@/components/ui/WhiteButton";
-import LoaderButton from "@/components/ui/LoaderButton";
-import { motion, useInView } from "motion/react";
-import { useRef, useState, useCallback, useEffect } from "react";
-import { useChat } from "@/components/context/ChatContext";
 import Link from "next/link";
+import { motion } from "motion/react";
+import Footer from "@/components/footer/Footer";
+import AskAlfredButton from "@/components/ui/AskAlfredButton";
+import ProjectCard from "@/components/project-card/ProjectCard";
+import { useChat } from "@/components/context/ChatContext";
+import {
+  heroStats,
+  services,
+  products,
+  projects,
+  process,
+  faqs,
+} from "@/lib/content";
 
-// types
-type ServiceCardProps = {
-  title: string;
-  image: string;
-  description: string;
-};
-
-type SplitTextProps = {
-  text: string;
-  isVisible: boolean;
-  className?: string;
-};
-
-type DesignShowcaseProps = {
-    thumbnail: string;
-    title: string; 
-    tag: string;
-    description: string;    
-    teaser?: string;
-    embed?: string;
-    custom?: number;
-};
-
-//animation variants
-const letterContainer = {
-  hidden: { opacity: 0 },
-  visible: {
+const reveal = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i: number = 0) => ({
     opacity: 1,
-    transition: {
-      delayChildren: 0.5,   // ⏳ delay before letters start animating
-      staggerChildren: 0.1, // delay between letters
-    },
-  },
-};
-
-const letter = {
-  hidden: { y: 50, opacity: 0 },
-  visible:{
     y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 20,
-    },
-  },
+    transition: { duration: 0.55, delay: i * 0.1 },
+  }),
 };
 
-const textVariant = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i: number) => ({ 
-    opacity: 1, y: 0, 
-    transition: { 
-      duration: 0.5, 
-      delay: i * .9, 
-    } 
-  }), 
-}
+const inView = {
+  initial: "hidden",
+  whileInView: "visible",
+  viewport: { once: true, amount: 0.2 },
+  variants: reveal,
+} as const;
 
-//components
-function ServiceCard({ title, image, description }: ServiceCardProps) {
+function SectionHead({ eyebrow, title, text }: { eyebrow: string; title: string; text?: string }) {
   return (
-    <div className={styles.service__grid__item}>
-      <div className={styles.service__grid__item_face2}>
-        <div className={styles.content}>
-          <Image src={image} alt={title} width={200} height={100} priority loading="eager"/>
-          <h3>{description}</h3>
-        </div>
-      </div>
-      <div className={styles.service__grid__item_face1}>
-        <h2>{title}</h2>
-      </div>
-    </div>
+    <motion.div className={styles.sectionHead} {...inView}>
+      <span className={styles.eyebrow}>{eyebrow}</span>
+      <h2>{title}</h2>
+      {text && <p>{text}</p>}
+    </motion.div>
   );
 }
 
-function SplitText({ text, isVisible, className }: SplitTextProps) {
-  return (
-    <motion.h2
-      className={`split-text ${className || ""}`}
-      variants={letterContainer}
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-    >
-      {text.split("").map((letterChar, i) => (
-        <motion.span
-          key={i}
-          variants={letter}
-          className={styles.split__text__letter}
-          style={{
-            whiteSpace: letterChar === " " ? "pre" : "normal",
-          }}
-        >
-          {letterChar}
-        </motion.span>
-      ))}
-    </motion.h2>
-  );
-};
-
-const DesignShowcase = ({thumbnail, title, tag, description, teaser, embed, custom = 0}: DesignShowcaseProps) => {
-    const [hovered, setHovered] = useState(false);
-    const [showEmbed, setShowEmbed] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [isMobileSmall, setIsMobileSmall] = useState(false);
-
-    const handleMouseEnter = useCallback(() => {
-        setHovered(true);
-    }, []);
-
-    const handleMouseLeave = useCallback(() => {
-        setHovered(false);
-        setShowEmbed(false);
-        setLoading(false);
-    }, []);
-
-    const handleShowEmbed = useCallback(() => {
-        setLoading(true);
-        setShowEmbed(true);
-        setHovered(true);
-    }, []);
-
-    const handleCloseEmbed = useCallback(() => {
-        setShowEmbed(false);
-        setLoading(false);
-        setHovered(false);
-    }, []);
-
-    const handleIframeLoad = useCallback(() => {
-        setLoading(false);
-    }, []);
-
-    useEffect(() => {
-      const handleResize = () => {
-        setIsMobileSmall(window.innerWidth <= 450);
-      }
-
-      handleResize();
-
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      }
-    }, []);
-    return (
-        <motion.div className={styles.card__container}
-            variants={textVariant} custom={custom}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <div className={styles.card}>
-                <Image src={thumbnail} alt={title} fill className={styles.card__image} />
-            </div>
-            <div className={styles.card__overlay}>
-                <div className={styles.card__media}>
-                    {teaser ? (
-                        !hovered ? (
-                            thumbnail && <Image src={thumbnail} alt={title} fill />
-                        ) : (
-                            <video
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                preload="metadata"
-                                style={{ width: "100%", borderRadius: "12px" }}
-                            >
-                                <source src={teaser} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                        )
-                    ) : (
-                        thumbnail && <Image src={thumbnail} alt={title} width={400} height={200} />
-                    )}
-                    {/* Show embed iframe if embed exists and showEmbed is true */}
-                    {embed && embed.trim() !== "" && showEmbed && hovered && (
-                        <iframe
-                            src={embed}
-                            style={{ border: "1px solid rgba(0,0,0,0.1)", width: "100%", height: "200px", borderRadius: "12px" }}
-                            allowFullScreen
-                            title="Figma Embed"
-                            className={styles.card__iframe}
-                            loading="lazy"
-                            onLoad={handleIframeLoad}
-                        />
-                    )}
-                </div>
-                <div className={styles.card__content}>
-                    <h2 className={styles.card__title}>{title}</h2>
-                    <span className={styles.card__tag}>{tag}</span>
-                    <p className={styles.card__description}>{description}</p>
-                    <div className={styles.figma__button__container}>
-                        {embed && embed.trim() !== "" && hovered &&( 
-                            loading ? (
-                            <LoaderButton disabled />
-                            ) : showEmbed ? (
-                            <WhiteButton 
-                              text="Close" 
-                              onClick={handleCloseEmbed} 
-                              size={isMobileSmall ? 'small' : 'medium'} 
-                            />
-                            )  : (
-                            <WhiteButton
-                              text="Show Figma"
-                              size={isMobileSmall ? 'small' : 'medium'}
-                              onClick={handleShowEmbed}
-                            />
-                            )
-                        )}
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
-
-//main component
 export default function Home() {
-  const { toggleChat } = useChat();
-  const serviceSvg = useRef<HTMLDivElement | null>(null);
-  const showCaseSvg = useRef<HTMLDivElement | null>(null);
-  const ctaRef = useRef<HTMLDivElement | null>(null);
-
-  const showCaseSvgIsInView = useInView(showCaseSvg, {amount: "some", once: true})
-  const serviceIsInView = useInView(serviceSvg, {amount: 0.2, once: true });
-  const ctaIsInView = useInView(ctaRef, {amount: 0.2, once: true });
-
-  const serviceHeader = "How we help you?";
-  const ctaHeader = `You can dream but don\'t\n neglect the execution!`;
-
-  const [isMobileSmall, setIsMobileSmall] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileSmall(window.innerWidth <= 450);
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const { openChat } = useChat();
 
   return (
-    <div className={styles.home__page}>
-      <motion.div 
-        className={styles.hero}
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -50 }}
-        transition={{ duration: 1.3, delay: 0.5 }}
-      >
-        <motion.div 
-          className={styles.hero__text}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
-        >
-          <h1>Engineering the invisible architecture of tomorrow!</h1>
-          <h3>We believe your ambition should know no limits. At Rexon Dev, <span>dream is free</span>, and we&apos;re here to build it.</h3>
-          <p>Your dedicated team for exceptional web, mobile, and custom software solutions. Let&apos;s create something extraordinary.</p>
-          <div className={styles.hero__button}>
-            <BlackButton
-              text="Start your dream"
-              size={isMobileSmall ? "small" : "medium"}
-              onClick={toggleChat}
-            />
-          </div>
-        </motion.div>
-        <div className={styles.hero__image}>
-          <Image src="/hero.svg"
-            alt="hero image"
-            className={styles.hero__img}
-            fill
-            priority
-            unoptimized
-          />
-        </div>
-      </motion.div>
-      <motion.div 
-        className={styles.service}
-        ref={serviceSvg}
-      >
-        <div className={styles.service__header}>
-          <div className={styles.service__image}>
-            {serviceIsInView && (
-              <Image
-                src="/setup-analytics-animate.svg"
-                alt="Service SVG"
-                fill
-                priority
-              />
-            )}
-          </div>
-          <div className={styles.service__text} >
-            <SplitText 
-              text={serviceHeader} 
-              isVisible={serviceIsInView} 
-              className={styles.service__text__header}
-            />
-            <motion.p
-              variants={textVariant} custom={1}
-              initial="hidden"
-              animate={serviceIsInView ? "visible" : "hidden"}
-              className={styles.service__text__description}
-            >We specialize in crafting tailored solutions that empower your business to thrive in the digital landscape.</motion.p>
-          </div>
-        </div>
-        <div className={styles.service__grid}>
-            {/* services here */}
-            {[
-              {
-                title: "Web Development",
-                image: "/website-creator-animate.svg",
-                description: "We build powerful, responsive web applications and websites that drive results. Our expertise covers modern frameworks to create scalable, secure, and high-performing digital experiences that function flawlessly on any device.",
-              },
-              {
-                title: "Mobile Development",
-                image: "/mobile-development-animate.svg",
-                description: "Extend your reach and connect with your audience everywhere. We craft engaging and user-friendly mobile apps for both iOS and Android, focusing on intuitive design and flawless performance to deliver real value to your users.",
-              },
-              {
-                title: "UI/UX Design",
-                image: "/ui-ux-design-animate.svg",
-                description: "We believe that exceptional software is born from exceptional design. Our designers are focused on creating intuitive and visually stunning digital experiences. We conduct user research, build thoughtful interfaces, and perfect the user journey to ensure your product isn't just functional, but a joy to use.",
-              },
-              {
-                title: "Custom Software",
-                image: "/developer-activity-animate.svg",
-                description: "When off-the-shelf solutions don't fit, we build tailored software to solve your unique challenges. We design bespoke applications that automate processes and give your business a competitive edge.",
-              },
-              {
-                title: "AI Automation",
-                image: "/ai-automation.svg",
-                description: "Looking to streamline your business operations? We design and implement AI-powered systems that handle customer inquiries, qualify leads, and automate follow-ups, helping you respond faster, reduce manual work, and convert more customers."
-              },
-              {
-                title: "Api Integration",
-                image: "/software-code-testing-animate.svg",
-                description: "Make your existing tools work better together. Our API integration service builds the digital bridges that allow your different software applications—like your CRM, e-commerce store, and marketing platforms—to share data automatically, eliminating manual work and boosting efficiency.",
-              }
-              // Add more services as needed
-            ].map((service, idx) => (
-              <ServiceCard
-                key={idx}
-                title={service.title}
-                image={service.image}
-                description={service.description}
-              />
-            ))}
-        </div>
-      </motion.div>
-      <motion.div 
-        className={styles.showcase}
-        ref={showCaseSvg}
-      >
-        <div className={styles.showcase__header}>
-          <div className={styles.showcase__header__text}>
-            <SplitText 
-              text="Don&apos;t just take our word for it" 
-              isVisible={showCaseSvgIsInView} 
-            />
-            <motion.h3
-              variants={textVariant} custom={2}
-              initial="hidden"
-              animate={showCaseSvgIsInView ? "visible" : "hidden"}
-            >Take our showcase too</motion.h3>
-          </div>
-          <div className={styles.showcase__header__image}>
-            {showCaseSvgIsInView&&(
-              <Image src="/online-gallery-animate.svg" alt="gallery" fill/>
-            )}
-          </div>
-        </div>
-        <motion.div className={styles.showcase__grid}
-          initial="hidden"
-          animate={showCaseSvgIsInView ? "visible" : "hidden"}
-          variants={textVariant} custom={1}
-        >
-          {/*add projects here...*/}
-          {/*Use short and concise descriptions...*/}
-          {[ 
-            {
-              thumbnail: "/projects/mzacc.svg",
-              title: "Mzacc Global",
-              tag: "Web Development",
-              description:"A clean and modern landing page designed for a startup and its ten sub-companies. Showcases brand identity, smooth color transition, and a scalable layout built to unify multiple services under one platform.",
-              embed: "",
-              teaser: "/videos/mzacc.mp4",
-            },{
-                thumbnail: "/projects/legal-crusaders.svg",
-                title: "Legal Crusaders",
-                tag: "Web Development",
-                description: "A sleek, high-performance immigration law landing page built with Next.js 14 and Tailwind CSS — featuring scroll-triggered animations, a fully responsive layout, and a clean separation of concerns across data, logic, and UI layers.",
-                embed: "",
-                teaser: "/videos/legal-crusaders.mp4"
-            },{
-              thumbnail: "/projects/attend.svg",
-              title: "Attend",
-              tag: "Web Development",
-              description: "A go-to platform for creating, discovering, and joining events. Whether academic, social, or professional, Attends makes hosting seamless and participation effortless.",
-              embed: "",
-              teaser: "/videos/attend.mp4",
-            }
-          ].map((showcase, idx) => {
-            return (
-              <DesignShowcase
-                key={idx}
-                thumbnail={showcase.thumbnail}
-                title={showcase.title}
-                tag={showcase.tag}
-                description={showcase.description}
-                teaser={showcase.teaser}
-                embed={showcase.embed} 
-                custom={idx}
-              />
-            );
-          })}
-          
-        </motion.div>
-        <Link href="/projects"
-          className={styles.showcase__button}
-        >
-          <BlackButton
-            text="See More?"
-            size={isMobileSmall ? 'small' : 'medium'}
-          />
-        </Link>
-        
-      </motion.div>
-      <div
-        className={styles.cta}
-        ref={ctaRef}
-      >
+    <main className={styles.home}>
+      {/* HERO */}
+      <section className={styles.hero}>
         <motion.div
-          className={styles.cta__container}
-          variants={textVariant}
-          initial="hidden"
-          animate={ctaIsInView ? "visible" : "hidden"}
+          className={styles.hero__text}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className={styles.cta__container__text}>
-            <SplitText text={ctaHeader} isVisible={ctaIsInView} className={styles.cta__header}/>
-            <motion.p 
-              className={styles.cta__description}
-              variants={textVariant}
-              initial="hidden"
-              animate={ctaIsInView ? "visible" : "hidden"}
-            >Whether you&apos;re a startup looking to make your mark, or an established business aiming to innovate, we&apos;re here to turn your <span>Dream</span> into reality. Let&apos;s build something extraordinary together.</motion.p>
-            <div className={styles.cta__container__button}>
-              <WhiteButton
-                text="Start your dream"
-                onClick={toggleChat}
-                size={isMobileSmall ? "small" : "medium"}
-              />
-            </div>
+          <span className={styles.pill}>
+            <i /> AI agents &amp; software for growing businesses
+          </span>
+          <h1>
+            We build AI agents that run your customer chats, and the software around them.
+          </h1>
+          <p className={styles.lead}>
+            Rexon Dev designs custom WhatsApp, Telegram and website agents that reply instantly, take orders and
+            follow up, plus the web and mobile products your business runs on. <strong>Dream is free.</strong>{" "}
+            We&apos;re here to build it.
+          </p>
+          <div className={styles.hero__actions}>
+            <button className={styles.primary} onClick={openChat}>
+              Talk to Alfred
+            </button>
+            <a className={styles.secondary} href="#agents">
+              See our AI agents
+            </a>
           </div>
-          <div className={styles.cta__container__image}>
-            <Image src="/dreamer-animate.svg"alt="cta image" fill/>
+          <ul className={styles.stats}>
+            {heroStats.map((s) => (
+              <li key={s.label}>
+                <strong>{s.value}</strong>
+                <span>{s.label}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+        <motion.div
+          className={styles.hero__image}
+          initial={{ opacity: 0, scale: 0.94 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.4 }}
+        >
+          <Image src="/hero.svg" alt="Rexon builders at work" fill priority unoptimized />
+        </motion.div>
+      </section>
+
+      {/* CHANNEL STRIP */}
+      <div className={styles.strip} aria-label="Platforms we build for">
+        <div className={styles.strip__track}>
+          {[0, 1].map((n) => (
+            <div key={n} className={styles.strip__row} aria-hidden={n === 1}>
+              {["WhatsApp", "Telegram", "Instagram", "Your website", "Google Sheets", "Supabase", "Next.js", "React Native", "Flutter"].map(
+                (t) => (
+                  <span key={t}>{t}</span>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* AI AGENTS */}
+      <section id="agents" className={styles.section}>
+        <SectionHead
+          eyebrow="AI agents"
+          title="Meet the agents we've already built"
+          text="Real products running real conversations. Tap any of them and Alfred will walk you through how it could work for your business."
+        />
+        <div className={styles.products}>
+          {products.map((p, i) => (
+            <motion.article
+              key={p.id}
+              className={`${styles.product} ${i % 2 ? styles.product_flip : ""}`}
+              {...inView}
+            >
+              <div className={styles.product__art}>
+                <Image src={p.illustration} alt={`${p.name} illustration`} fill sizes="(max-width: 900px) 80vw, 40vw" />
+              </div>
+              <div className={styles.product__body}>
+                <span className={styles.kind}>{p.kind}</span>
+                <h3>{p.name}</h3>
+                <h4>{p.tagline}</h4>
+                <p>{p.description}</p>
+                <ul className={styles.outcomes}>
+                  {p.outcomes.map((o) => (
+                    <li key={o}>{o}</li>
+                  ))}
+                </ul>
+                <div className={styles.channels}>
+                  {p.channels.map((c) => (
+                    <span key={c}>{c}</span>
+                  ))}
+                </div>
+                <AskAlfredButton message={p.ask} label={`Ask Alfred about ${p.name}`} variant="solid" />
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className={styles.section}>
+        <SectionHead
+          eyebrow="What we do"
+          title="Everything your business needs to run smarter"
+          text="AI automation is our edge. The same team also designs and builds the web and mobile products around it."
+        />
+        <div className={styles.services}>
+          {services.map((s, i) => (
+            <motion.article
+              key={s.title}
+              className={`${styles.service} ${s.featured ? styles.service_featured : ""}`}
+              variants={reveal}
+              initial="hidden"
+              whileInView="visible"
+              custom={i % 3}
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <div className={styles.service__art}>
+                <Image src={s.image} alt="" fill sizes="(max-width: 900px) 60vw, 25vw" />
+              </div>
+              <h3>{s.title}</h3>
+              <p>{s.description}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      {/* WORK */}
+      <section className={styles.section}>
+        <SectionHead
+          eyebrow="Selected work"
+          title="Don't just take our word for it"
+          text="A few of the sites and platforms we've shipped. Like one? Ask Alfred and he'll tell you how we'd build yours."
+        />
+        <div className={styles.work}>
+          {projects.slice(0, 3).map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} />
+          ))}
+        </div>
+        <motion.div className={styles.center} {...inView}>
+          <Link href="/projects" className={styles.secondary}>
+            See all projects
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* PROCESS */}
+      <section className={styles.section}>
+        <div className={styles.processWrap}>
+          <div>
+            <SectionHead
+              eyebrow="How it works"
+              title="From first message to live agent"
+              text="No jargon, no long waiting. You'll see a working version before you commit to launch."
+            />
+            <ol className={styles.process}>
+              {process.map((s, i) => (
+                <motion.li key={s.step} variants={reveal} initial="hidden" whileInView="visible" custom={i} viewport={{ once: true, amount: 0.3 }}>
+                  <span>{s.step}</span>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p>{s.text}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </ol>
+          </div>
+          <motion.div className={styles.processWrap__art} {...inView}>
+            <Image src="/consulting-animate.svg" alt="A consultation with the Rexon team" fill sizes="(max-width: 900px) 80vw, 40vw" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className={styles.section}>
+        <SectionHead eyebrow="Good to know" title="Questions we hear a lot" />
+        <div className={styles.faqs}>
+          {faqs.map((f) => (
+            <details key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className={styles.cta}>
+        <motion.div className={styles.cta__text} {...inView}>
+          <h2>You can dream, but don&apos;t neglect the execution.</h2>
+          <p>
+            Whether you&apos;re a startup making your mark or an established business ready to automate, tell Alfred what&apos;s
+            slowing you down. He&apos;ll loop in the team.
+          </p>
+          <div className={styles.hero__actions}>
+            <button className={styles.primary_dark} onClick={openChat}>
+              Start your dream
+            </button>
+            <Link className={styles.secondary_dark} href="/pricing">
+              View pricing
+            </Link>
           </div>
         </motion.div>
-      </div>
-      <div>
-        <Footer />
-      </div>
-    </div>
+        <div className={styles.cta__art}>
+          <Image src="/dreamer-animate.svg" alt="Dreaming big" fill sizes="(max-width: 900px) 70vw, 30vw" />
+        </div>
+      </section>
+
+      <Footer />
+    </main>
   );
 }

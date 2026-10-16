@@ -1,6 +1,30 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --cream: #f0ece4;
+  --surface: #111111;
+  --surface-2: #181818;
+  --line: rgba(255, 255, 255, 0.1);
+  --muted: rgba(237, 237, 237, 0.62);
+  --ok: #22c55e;
+}
+
+::selection {
+  background: var(--cream);
+  color: #0a0a0a;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 html,
