@@ -187,6 +187,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: process.env.FAST_MODEL_ID || "openai/gpt-oss-20b",
         temperature: 0.3,
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt },
           ...conversation,
