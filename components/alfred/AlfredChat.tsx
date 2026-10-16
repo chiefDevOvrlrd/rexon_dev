@@ -205,7 +205,7 @@ export default function AlfredChat() {
           </div>
 
           <div className={styles.chatWidget__consentText}>
-            By chatting, you consent to verification workflow emails when needed.
+            Your messages may be shared with our team via WhatsApp for follow-up.
           </div>
         </div>
       </div>
