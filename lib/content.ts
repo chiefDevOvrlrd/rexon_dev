@@ -80,12 +80,12 @@ export const services: Service[] = [
 export const products: Product[] = [
   {
     id: "alfred",
-    name: "Alfred",
+    name: "Rexon Alfred",
     kind: "AI Agent",
-    channels: ["Website", "Email", "WhatsApp"],
-    tagline: "Your AI sales rep that never sleeps",
+    channels: ["Website", "Email", "WhatsApp", "Telegram" ],
+    tagline: "Rexon's very own AI sales rep that never sleeps",
     description:
-      "Alfred finds leads, scores them, writes personalised outreach and runs the follow-ups. On your website he answers questions and books appointments. You're already talking to him.",
+      "Alfred finds leads, scores them, writes personalised outreach and runs the follow-ups. On our website he answers questions and books appointments. You're already talking to him.",
     outcomes: ["Lead discovery & scoring", "Personalised outreach", "Follow-up sequences", "FAQ & booking"],
     illustration: "/setup-analytics-animate.svg",
     ask: "Hi Alfred, I'd like to know more about you as a product. How could an AI sales rep like you work for my business?",
@@ -103,8 +103,8 @@ export const products: Product[] = [
     ask: "Hi Alfred, I'd like to know more about the Promo Broadcasts feature. How does it work, and can I add it to my business's agent?",
   },
   {
-    id: "phone-vendor-agent",
-    name: "WhatsApp Sales Agent",
+    id: "alfred-phone-vendor-agent",
+    name: "APV Agent (alfred phone vendor)",
     kind: "AI Agent",
     channels: ["WhatsApp", "Google Sheets"],
     tagline: "For phone & gadget vendors",
@@ -112,7 +112,7 @@ export const products: Product[] = [
       "Customers ask for a phone and the agent finds the exact model in your inventory, quotes the price, suggests alternatives within budget and answers FAQs. Update stock in a Google Sheet and the agent stays in sync.",
     outcomes: ["Exact-match inventory search", "Budget-based recommendations", "Edit stock in Google Sheets", "Handles FAQs instantly"],
     illustration: "/mobile-development-animate.svg",
-    ask: "Hi Alfred, I'd like to know more about the WhatsApp Sales Agent for phone and gadget vendors. How does it handle my inventory and customer enquiries?",
+    ask: "Hi Alfred, I'd like to know more about the APV Agent for phone and gadget vendors. How does it handle my inventory and customer enquiries?",
   },
   {
     id: "wifi-agent",
