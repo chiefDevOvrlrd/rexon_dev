@@ -232,3 +232,75 @@ export const faqs = [
     a: "Each project is scoped individually, based on channels, integrations and complexity. Ask Alfred for a quick estimate or see our pricing page.",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Pricing — edit numbers here and the pricing page (and its calculator) update.
+// ---------------------------------------------------------------------------
+
+/** Used only for the "$" view. Update when the rate moves a lot. */
+export const NGN_PER_USD = 1400;
+
+export const PRICE = {
+  channel: 50_000, // WhatsApp, Instagram or Telegram — each
+  websiteAgent: 50_000, // counts as another channel
+  sheetsInventory: 100_000, // Google Sheets inventory the owner can edit
+  monthlyBase: 15_000,
+  monthlyWithInventory: 20_000,
+  customFrom: 350_000,
+};
+
+export const channelOptions = [
+  { id: "whatsapp", label: "WhatsApp", price: PRICE.channel },
+  { id: "instagram", label: "Instagram", price: PRICE.channel },
+  { id: "telegram", label: "Telegram", price: PRICE.channel },
+  { id: "website", label: "Website agent", price: PRICE.websiteAgent },
+] as const;
+
+export type ChannelId = (typeof channelOptions)[number]["id"];
+
+export function quote(selected: ChannelId[], inventory: boolean) {
+  const channels = channelOptions.filter((c) => selected.includes(c.id));
+  const setup = channels.reduce((sum, c) => sum + c.price, 0) + (inventory ? PRICE.sheetsInventory : 0);
+  const monthly = inventory ? PRICE.monthlyWithInventory : PRICE.monthlyBase;
+  return { channels, setup, monthly };
+}
+
+export const pricingPlans = [
+  {
+    name: "Starter Agent",
+    blurb: "One channel, answering FAQs and capturing leads.",
+    channels: ["whatsapp"] as ChannelId[],
+    inventory: false,
+    includes: ["1 channel of your choice", "Trained on your business info", "Lead capture & handover to you"],
+  },
+  {
+    name: "Inventory Agent",
+    blurb: "Sells from your stock list, which you edit in Google Sheets.",
+    channels: ["whatsapp"] as ChannelId[],
+    inventory: true,
+    popular: true,
+    includes: ["1 channel of your choice", "Google Sheets inventory sync", "Exact-match product search & prices", "Budget-based recommendations"],
+  },
+  {
+    name: "Everywhere Agent",
+    blurb: "One brain, answering on every channel your customers use.",
+    channels: ["whatsapp", "instagram", "telegram", "website"] as ChannelId[],
+    inventory: true,
+    includes: ["WhatsApp, Instagram, Telegram + website", "Google Sheets inventory sync", "Same memory across channels", "Best for busy, multi-channel brands"],
+  },
+];
+
+export const pricingFaqs = [
+  {
+    q: "What does the monthly fee cover?",
+    a: "It keeps your agent hosted, online and maintained. Setup is paid once; the monthly fee is what keeps it running.",
+  },
+  {
+    q: "Can I start with one channel and add more later?",
+    a: "Yes. Each extra channel is priced separately, so you only pay for what you use and can grow at your own pace.",
+  },
+  {
+    q: "What if I need something custom?",
+    a: "Custom builds, integrations, websites and mobile apps are scoped individually. Tell Alfred what you need and the team will send a clear quote.",
+  },
+];

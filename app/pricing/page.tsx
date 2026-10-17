@@ -1,225 +1,230 @@
 "use client";
 
-import styles from './page.module.scss';
-import { motion, useInView } from 'motion/react';
-import Image from 'next/image';
-import Footer from '@/components/footer/Footer';
-import BlackButton from '@/components/ui/BlackButton';
-import { useRef } from 'react';
-import { useChat } from '@/components/context/ChatContext';
+import styles from "./page.module.scss";
+import Image from "next/image";
+import { useMemo, useState } from "react";
+import { motion } from "motion/react";
+import Footer from "@/components/footer/Footer";
+import AskAlfredButton from "@/components/ui/AskAlfredButton";
+import { useChat } from "@/components/context/ChatContext";
+import {
+  NGN_PER_USD,
+  PRICE,
+  channelOptions,
+  pricingFaqs,
+  pricingPlans,
+  quote,
+  type ChannelId,
+} from "@/lib/content";
 
-//types
-type SplitTextProps = {
-    text: string;
-    isVisible: boolean;
-    className?: string;
-};
+type Currency = "NGN" | "USD";
 
-//animation variants
-const letterContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            delayChildren: 0.5,   // ⏳ delay before letters start animating
-            staggerChildren: 0.1, // delay between letters
-        },
-    },
-};
+const fadeUp = {
+  initial: { opacity: 0, y: 36 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55 },
+} as const;
 
-const letter = {
-    hidden: { y: 50, opacity: 0 },
-    visible:{
-        y: 0,
-        opacity: 1,
-        transition: {
-            type: "spring" as const,
-            stiffness: 100,
-            damping: 20,
-        },
-    },
-};
+function money(ngn: number, currency: Currency) {
+  if (currency === "NGN") return `₦${ngn.toLocaleString("en-NG")}`;
+  // round to the nearest $5 so the dollar view reads as a clean anchor price
+  const usd = Math.max(5, Math.round(ngn / NGN_PER_USD / 5) * 5);
+  return `$${usd.toLocaleString("en-US")}`;
+}
 
-const textVariant = {
-    hidden: { opacity: 0, y: 50 },
-    visible: (i: number) => ({ 
-        opacity: 1, y: 0, 
-        transition: { 
-            duration: 0.5, 
-            delay: i * 0.3, 
-        } 
-    }), 
-};
+export default function Pricing() {
+  const { askAlfred } = useChat();
+  const [currency, setCurrency] = useState<Currency>("NGN");
+  const [selected, setSelected] = useState<ChannelId[]>(["whatsapp"]);
+  const [inventory, setInventory] = useState(false);
 
-//components
-function SplitText({ text, isVisible, className }: SplitTextProps) {
-    return (
-        <motion.h2
-            className={`split-text ${className || ""}`}
-            variants={letterContainer}
-            initial="hidden"
-            animate={isVisible ? "visible" : "hidden"}
+  const toggle = (id: ChannelId) =>
+    setSelected((cur) => (cur.includes(id) ? cur.filter((c) => c !== id) : [...cur, id]));
+
+  const built = useMemo(() => quote(selected, inventory), [selected, inventory]);
+
+  const buildMessage = () => {
+    if (built.channels.length === 0 && !inventory) {
+      return "Hi Alfred, I'd like a quote for an AI agent for my business. Can you help me work out what I need?";
+    }
+    const parts: string[] = built.channels.map((c) => c.label);
+    if (inventory) parts.push("Google Sheets inventory");
+    return `Hi Alfred, I put together an AI agent on the pricing page: ${parts.join(", ")}. It came to about ${money(
+      built.setup,
+      "NGN"
+    )} setup. Can you confirm the price and tell me what happens next?`;
+  };
+
+  return (
+    <main className={styles.page}>
+      {/* HEADER */}
+      <header className={styles.header}>
+        <motion.div
+          className={styles.header__text}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
         >
-        {text.split("").map((letterChar, i) => (
-            <motion.span
-                key={i}
-                variants={letter}
-                className={styles.split__text__letter}
-                style={{
-                    whiteSpace: letterChar === " " ? "pre" : "normal",
-                }}
-            >
-            {letterChar}
-            </motion.span>
-        ))}
-        </motion.h2>
-    );
-};
+          <span className={styles.eyebrow}>Pricing</span>
+          <h1>Simple pricing for agents that pay for themselves.</h1>
+          <p>
+            Pay once to set up, then a small monthly fee to keep your agent running. One customer service rep costs far
+            more each month than an agent that never sleeps, never forgets and replies in seconds.
+          </p>
+          <div className={styles.currency} role="group" aria-label="Currency">
+            {(["NGN", "USD"] as Currency[]).map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={currency === c ? styles.currency_active : ""}
+                aria-pressed={currency === c}
+                onClick={() => setCurrency(c)}
+              >
+                {c === "NGN" ? "₦ Naira" : "$ USD"}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+        <motion.div
+          className={styles.header__art}
+          initial={{ opacity: 0, scale: 0.94 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <Image src="/banknote-animate.svg" alt="Pricing illustration" fill priority sizes="(max-width: 900px) 70vw, 35vw" />
+        </motion.div>
+      </header>
 
-//main component
-const Pricing = () => {
-    const { toggleChat } = useChat();
-    const headerRef = useRef<HTMLDivElement|null>(null);
-    const factorsRef = useRef<HTMLDivElement|null>(null);
-    const engagementRef = useRef<HTMLDivElement|null>(null);
-
-
-    const headerIsInView = useInView(headerRef, { once: true, amount: 0.5 });
-    const factorsIsInView = useInView(factorsRef, { once: true, amount: 0.5 });
-    const engagementIsInView = useInView(engagementRef, { once: true, amount: 0.5 });
-
-    return (
-        <div className={styles.pricing}>
-            <div className={styles.pricing__header} ref={headerRef}>
-                <div className={styles.pricing__header__image}>
-                        {headerIsInView && (
-                            <Image
-                                src="/consulting-animate.svg"
-                                alt="Consulting Illustration"
-                                width={600}
-                                height={600}
-                                priority
-                            />
-                        )}
+      {/* PLANS */}
+      <section className={styles.block}>
+        <motion.h2 {...fadeUp}>Popular setups</motion.h2>
+        <div className={styles.plans}>
+          {pricingPlans.map((plan, i) => {
+            const q = quote(plan.channels, plan.inventory);
+            return (
+              <motion.article
+                key={plan.name}
+                className={`${styles.plan} ${plan.popular ? styles.plan_popular : ""}`}
+                {...fadeUp}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {plan.popular && <span className={styles.badge}>Most popular</span>}
+                <h3>{plan.name}</h3>
+                <p className={styles.plan__blurb}>{plan.blurb}</p>
+                <div className={styles.price}>
+                  <strong>{money(q.setup, currency)}</strong>
+                  <span>one-time setup</span>
                 </div>
-                <div className={styles.pricing__header__text}>
-                    <motion.h1
-                        variants={textVariant} custom={0}
-                        initial="hidden"
-                        animate={headerIsInView ? "visible" : "hidden"}
-                    >Investing in Your Digital Dream.</motion.h1>
-                    <motion.p
-                        variants={textVariant} custom={1}
-                        initial="hidden"
-                        animate={headerIsInView ? "visible" : "hidden"}
-                    >At <b>Rexon Dev</b>, we believe in <b>transparent and customized pricing</b>. Unlike fixed packages, our approach is meticulously tailored to the unique needs, complexity, and scope of your project, ensuring you only pay for the value you receive. Our goal is to serve as a <b>partner, not just a vendor</b>. We provide clear, value-based investment estimates and custom quotes built on an honest conversation about your budget, goals, and vision, ensuring your high-quality solution meets your exact specifications.</motion.p>
+                <div className={styles.monthly}>
+                  + from {money(q.monthly, currency)}/month
                 </div>
-            </div>
-            <div className={styles.pricing__factors} ref={factorsRef}>
-                <div className={styles.pricing__factors__header}>
-                    <SplitText 
-                        text="What Influences Our" 
-                        isVisible={factorsIsInView} 
-                        className={styles.pricing__factors__header__text}
-                    />
-                    <SplitText 
-                        text="Pricing?" 
-                        isVisible={factorsIsInView} 
-                        className={styles.pricing__factors__header__text}
-                    />
-                    <div className={styles.pricing__factors__content}>
-                        <ul>
-                            <motion.li
-                                variants={textVariant} custom={0}
-                                initial="hidden"
-                                animate={factorsIsInView ? "visible" : "hidden"}
-                            ><b>Project Scope & Complexity: </b>The number of features, pages, and functionalities required for your solution directly impacts the cost. A complex e-commerce platform will require a greater investment than a simple marketing website.</motion.li>
-                            <motion.li
-                                variants={textVariant} custom={1}
-                                initial="hidden"
-                                animate={factorsIsInView ? "visible" : "hidden"}
-                            ><b>Design Intricacy: </b>A custom, highly interactive UI/UX design requires more time and effort than a standard, template-based approach.</motion.li>
-                            <motion.li
-                                variants={textVariant} custom={2}
-                                initial="hidden"
-                                animate={factorsIsInView ? "visible" : "hidden"}
-                            ><b>Timeline: </b>A project with a tight deadline that requires a faster turnaround may necessitate a greater investment to dedicate the necessary resources.</motion.li>
-                            <motion.li
-                                variants={textVariant} custom={3}
-                                initial="hidden"
-                                animate={factorsIsInView ? "visible" : "hidden"}
-                            ><b>Technology Stack: </b>The specific technologies and tools required for the project, especially custom and emerging tech, will affect the development time.</motion.li>
-                        </ul>
-                    </div>
-                </div>
-                <div className={styles.pricing__factors__image}>
-                    {factorsIsInView && (
-                        <Image
-                            src="/banknote-animate.svg"
-                                alt="banknote illustration"
-                                width={600}
-                                height={600}
-                                priority
-                        />
-                    )}
-                </div>
-            </div>
-            <div className={styles.pricing__engagementModel} ref={engagementRef}>
-                <div className={styles.pricing__engagementModel__image}>
-                    {engagementIsInView && (
-                        <Image
-                            src="/invoice-animate.svg"
-                            alt="invoice illustration"
-                            width={600}
-                            height={600}
-                            priority
-                        />
-                    )}
-                </div>
-                <div className={styles.pricing__engagementModel__header}>
-                    <SplitText
-                        text='Our Engagement'
-                        isVisible={engagementIsInView}
-                        className={styles.pricing__engagementModel__header__text}
-                    />
-                    <SplitText
-                        text='Models?'
-                        isVisible={engagementIsInView}
-                        className={styles.pricing__engagementModel__header__text}
-                    />
-
-                    <ul>
-                        <motion.li
-                            variants={textVariant} custom={0}
-                            initial="hidden"
-                            animate={engagementIsInView ? "visible" : "hidden"}
-                        ><b>Fixed-Price Projects: </b>Best for projects with a clearly defined scope and detailed requirements. We agree on a final price upfront, and you can rest easy knowing the total cost.</motion.li>
-                        <motion.li
-                            variants={textVariant} custom={1}
-                            initial="hidden"
-                            animate={engagementIsInView ? "visible" : "hidden"}
-                        ><b>Hourly Rates: </b>Ideal for smaller tasks, ongoing maintenance, or projects with evolving requirements. We track our hours and bill you on a bi-weekly or monthly basis.</motion.li>
-                        <motion.li
-                            variants={textVariant} custom={2}
-                            initial="hidden"
-                            animate={engagementIsInView ? "visible" : "hidden"}
-                        ><b>Retainer Models: </b>Perfect for long-term partnerships or clients who need dedicated support for continuous development, bug fixes, and feature updates. We agree on a set number of hours per month at a discounted rate.</motion.li>
-                    </ul>
-                </div>
-            </div>
-            <div className={styles.pricing__getStarted}>
-                <h2>Let&apos;s get rolling!!!</h2>
-                <p>The best way to get an accurate quote is to discuss your project with us. Let&apos;s schedule a free consultation to talk about your vision and provide a personalized investment estimate.</p>
-            <div className={styles.pricing__getStarted__button}>
-                <BlackButton
-                    text="Start your Dream"
-                    onClick={toggleChat}
+                <ul>
+                  {plan.includes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+                <AskAlfredButton
+                  message={`Hi Alfred, I'm interested in the ${plan.name} from the pricing page. Can you tell me more and confirm what it would cost for my business?`}
+                  label={`Ask Alfred about ${plan.name}`}
+                  variant={plan.popular ? "solid" : "ghost"}
                 />
-            </div>
-            </div>
-            <Footer />
+              </motion.article>
+            );
+          })}
         </div>
-    )
-};
+      </section>
 
-export default Pricing;
+      {/* BUILDER */}
+      <section className={styles.block}>
+        <motion.div className={styles.builder} {...fadeUp}>
+          <div className={styles.builder__form}>
+            <span className={styles.eyebrow}>Build your own</span>
+            <h2>Pick what you need, see the price.</h2>
+            <p>Each channel is priced separately. Add a Google Sheets inventory if you sell products from a stock list.</p>
+
+            <fieldset>
+              <legend>Channels</legend>
+              <div className={styles.options}>
+                {channelOptions.map((c) => (
+                  <label key={c.id} className={selected.includes(c.id) ? styles.option_on : ""}>
+                    <input type="checkbox" checked={selected.includes(c.id)} onChange={() => toggle(c.id)} />
+                    <span>{c.label}</span>
+                    <em>{money(c.price, currency)}</em>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Add-ons</legend>
+              <div className={styles.options}>
+                <label className={inventory ? styles.option_on : ""}>
+                  <input type="checkbox" checked={inventory} onChange={() => setInventory((v) => !v)} />
+                  <span>Google Sheets inventory</span>
+                  <em>{money(PRICE.sheetsInventory, currency)}</em>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <aside className={styles.builder__total} aria-live="polite">
+            <span>Your estimate</span>
+            <strong>{money(built.setup, currency)}</strong>
+            <small>one-time setup</small>
+            <div className={styles.builder__monthly}>
+              + from {money(built.monthly, currency)}/month to keep it running
+            </div>
+            <button type="button" onClick={() => askAlfred(buildMessage())}>
+              Send this to Alfred
+            </button>
+            <p>Alfred confirms the final price and flags your request to the team.</p>
+          </aside>
+        </motion.div>
+        {currency === "USD" && (
+          <p className={styles.fxnote}>
+            Dollar prices are approximate, rounded from the naira price at about ₦{NGN_PER_USD.toLocaleString()} per $1.
+          </p>
+        )}
+      </section>
+
+      {/* CUSTOM */}
+      <section className={styles.block}>
+        <motion.div className={styles.custom} {...fadeUp}>
+          <div>
+            <span className={styles.eyebrow}>Custom builds</span>
+            <h2>Websites, mobile apps and custom software</h2>
+            <p>
+              Anything beyond an agent is scoped individually, based on features, design depth, timeline and tech.
+              Custom builds start from <strong>{money(PRICE.customFrom, currency)}</strong>. We work fixed-price, hourly
+              or on a monthly retainer, whichever fits your project.
+            </p>
+            <AskAlfredButton
+              message="Hi Alfred, I'd like a quote for a custom build (website, app or software). Can I tell you what I need?"
+              label="Get a custom quote"
+              variant="solid"
+            />
+          </div>
+          <div className={styles.custom__art}>
+            <Image src="/invoice-animate.svg" alt="Custom quote illustration" fill sizes="(max-width: 900px) 70vw, 30vw" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* FAQ */}
+      <section className={styles.block}>
+        <motion.h2 {...fadeUp}>Pricing questions</motion.h2>
+        <div className={styles.faqs}>
+          {pricingFaqs.map((f) => (
+            <details key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}
