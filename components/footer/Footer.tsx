@@ -13,6 +13,12 @@ export default function Footer() {
             <Link href={"/"}>
                 <Image src="/logo.svg" alt="logo" width={40} height={40} />
             </Link>
+            <nav className={styles.links} aria-label="Footer">
+                <Link href="/projects">Projects</Link>
+                <Link href="/pricing">Pricing</Link>
+                <Link href="/blog">Blog</Link>
+                <Link href="/about-us">About</Link>
+            </nav>
             {/* copyright text */}
             <div>
                 <p>©{year} Rexon. All rights reserved.</p>
