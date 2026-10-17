@@ -5,7 +5,7 @@
 export type Product = {
   id: string;
   name: string;
-  kind: "AI Agent" | "Product";
+  kind: "AI Agent" | "Feature" | "Product";
   channels: string[];
   tagline: string;
   description: string;
@@ -89,6 +89,18 @@ export const products: Product[] = [
     outcomes: ["Lead discovery & scoring", "Personalised outreach", "Follow-up sequences", "FAQ & booking"],
     illustration: "/setup-analytics-animate.svg",
     ask: "Hi Alfred, I'd like to know more about you as a product. How could an AI sales rep like you work for my business?",
+  },
+  {
+    id: "promo",
+    name: "Promo Broadcasts",
+    kind: "Feature",
+    channels: ["WhatsApp", "Works with any Rexon agent"],
+    tagline: "Bring past customers and enquiries back",
+    description:
+      "Your agent remembers everyone who has ever messaged your business, whether they bought or not. When you have a new offer, discount or product video, send it to those people in one command and remind them what you do. It only reaches people who contacted you first, never random numbers.",
+    outcomes: ["Saves every contact who messages you", "One command to send a promo", "Text, flyers or promo videos", "Only people who reached out first"],
+    illustration: "/example-animate.svg",
+    ask: "Hi Alfred, I'd like to know more about the Promo Broadcasts feature. How does it work, and can I add it to my business's agent?",
   },
   {
     id: "phone-vendor-agent",
@@ -222,6 +234,10 @@ export const faqs = [
   {
     q: "Which platforms do the agents run on?",
     a: "WhatsApp, Telegram, Instagram and your website. One agent can cover several channels.",
+  },
+  {
+    q: "Can the agent send promos to my customers?",
+    a: "Yes. The agent saves everyone who messages your business, so you can send an offer, discount or promo video to those people in one command. It only reaches people who contacted you first, not random numbers.",
   },
   {
     q: "Do I need a website first?",
