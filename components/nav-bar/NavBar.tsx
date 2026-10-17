@@ -98,6 +98,15 @@ export default function NavBar() {
                         >
                             <Link href={'/pricing'}>Pricing</Link>
                         </motion.li>
+                        <motion.li
+                            variants={linkVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            whileTap="tap"
+                            animate={pathname.startsWith("/blog") ? "active" : "initial"}
+                        >
+                            <Link href={'/blog'}>Blog</Link>
+                        </motion.li>
                         
                     </ul>
                 </div>                
@@ -164,7 +173,15 @@ export default function NavBar() {
                     >
                         <Link href={'/pricing'}>Pricing</Link>
                     </motion.li>
-                    
+                    <motion.li
+                        variants={linkVariants}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
+                        animate={pathname.startsWith("/blog") ? "active" : "initial"}
+                    >
+                        <Link href={'/blog'}>Blog</Link>
+                    </motion.li>
                 </ul>
             </div>
         </motion.div>
