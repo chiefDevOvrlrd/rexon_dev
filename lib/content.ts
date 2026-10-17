@@ -260,8 +260,12 @@ export const PRICE = {
   channel: 50_000, // WhatsApp, Instagram or Telegram — each
   websiteAgent: 50_000, // counts as another channel
   sheetsInventory: 100_000, // Google Sheets inventory the owner can edit
+  // Monthly upkeep: up to 2 channels vs 3+ channels, plus an inventory add-on.
   monthlyBase: 15_000,
-  monthlyWithInventory: 20_000,
+  monthlyManyChannels: 30_000,
+  monthlyInventoryFew: 5_000, // inventory add-on with 1-2 channels
+  monthlyInventoryMany: 10_000, // inventory add-on with 3+ channels
+  manyChannelsFrom: 3,
   customFrom: 350_000,
 };
 
@@ -277,7 +281,10 @@ export type ChannelId = (typeof channelOptions)[number]["id"];
 export function quote(selected: ChannelId[], inventory: boolean) {
   const channels = channelOptions.filter((c) => selected.includes(c.id));
   const setup = channels.reduce((sum, c) => sum + c.price, 0) + (inventory ? PRICE.sheetsInventory : 0);
-  const monthly = inventory ? PRICE.monthlyWithInventory : PRICE.monthlyBase;
+  const many = channels.length >= PRICE.manyChannelsFrom;
+  const monthly =
+    (many ? PRICE.monthlyManyChannels : PRICE.monthlyBase) +
+    (inventory ? (many ? PRICE.monthlyInventoryMany : PRICE.monthlyInventoryFew) : 0);
   return { channels, setup, monthly };
 }
 
