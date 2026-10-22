@@ -9,6 +9,7 @@ import {
     IconBrandInstagram,
     IconBrandTiktok,
     IconBrandFacebook,
+    IconBrandWhatsapp,
     IconMail,
 } from "@tabler/icons-react";
 
@@ -37,6 +38,9 @@ export default function Footer() {
             <div className={styles.socials}>
                 <a href="mailto:info@rexon.dev" aria-label="Email us">
                     <IconMail stroke={2}/>
+                </a>
+                <a href="https://wa.me/2348122949233" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
+                    <IconBrandWhatsapp stroke={2}/>
                 </a>
                 <a href="https://www.instagram.com/rexondev" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
                     <IconBrandInstagram stroke={2}/>
