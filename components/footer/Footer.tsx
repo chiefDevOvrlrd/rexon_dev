@@ -3,8 +3,15 @@
 import Image from "next/image";
 import styles from "./footer.module.scss"
 import Link from "next/link";
-import { IconBrandX } from '@tabler/icons-react';
-import { IconBrandLinkedin } from "@tabler/icons-react";
+import {
+    IconBrandX,
+    IconBrandLinkedin,
+    IconBrandInstagram,
+    IconBrandTiktok,
+    IconBrandFacebook,
+    IconBrandWhatsapp,
+    IconMail,
+} from "@tabler/icons-react";
 
 export default function Footer() {
     const year = new Date().getFullYear();
@@ -29,6 +36,21 @@ export default function Footer() {
 
             {/* Social Links */}
             <div className={styles.socials}>
+                <a href="mailto:info@rexon.dev" aria-label="Email us">
+                    <IconMail stroke={2}/>
+                </a>
+                <a href="https://wa.me/2348122949233" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
+                    <IconBrandWhatsapp stroke={2}/>
+                </a>
+                <a href="https://www.instagram.com/rexondev" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
+                    <IconBrandInstagram stroke={2}/>
+                </a>
+                <a href="https://www.tiktok.com/@rexoninc" target="_blank" rel="noopener noreferrer" aria-label="Follow us on TikTok">
+                    <IconBrandTiktok stroke={2}/>
+                </a>
+                <a href="https://www.facebook.com/share/1CT3dXpU7A/" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook">
+                    <IconBrandFacebook stroke={2}/>
+                </a>
                 <a href="https://x.com/rexon_dev" target="_blank" rel="noopener noreferrer" aria-label="Follow us on X (Twitter)">
                     <IconBrandX stroke={2}/>
                 </a>
