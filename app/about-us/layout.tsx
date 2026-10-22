@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About Us | Rexon Dev",
-  description: "Meet the engineers and designers behind Rexon Dev, an AI automation and software agency based in Port Harcourt, Nigeria.",
+  description: "Meet the engineers and designers behind Rexon Dev, an AI automation and software agency based in Abuja, Nigeria.",
   alternates: { canonical: "/about-us" },
 };
 
