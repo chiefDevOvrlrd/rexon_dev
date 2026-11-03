@@ -115,6 +115,18 @@ export const products: Product[] = [
     ask: "Hi Alfred, I'd like to know more about the APV Agent for phone and gadget vendors. How does it handle my inventory and customer enquiries?",
   },
   {
+    id: "alfred-drip-agent",
+    name: "ADA Agent (alfred drip agent)",
+    kind: "AI Agent",
+    channels: ["WhatsApp"],
+    tagline: "For fashion & clothing brands",
+    description:
+      "Your fashion brand's WhatsApp shopfront. Customers browse the catalog, order, and pay through a payment link. You update stock, prices and photos straight from WhatsApp. Waitlists, delivery quotes and sold-out requests are handled automatically.",
+    outcomes: ["Browse the catalog in chat", "Orders paid by payment link", "Update stock, prices & photos on WhatsApp", "Waitlists, delivery quotes & sold-out requests"],
+    illustration: "/banknote-animate.svg",
+    ask: "Hi Alfred, I'd like to know more about the ADA Agent for fashion and clothing brands. How would it handle my catalog, orders and payments on WhatsApp?",
+  },
+  {
     id: "wifi-agent",
     name: "WiFi Subscription Agent",
     kind: "AI Agent",
